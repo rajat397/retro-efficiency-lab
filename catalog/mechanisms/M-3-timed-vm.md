@@ -43,8 +43,12 @@ replay-hostile to frame-rate changes; self-mutating dispatch is invisible in sta
 analysis (we found the second runner only through the pointer's xrefs); a bad
 terminator strands the pointer.
 
-**Status.** **cataloged** — two full binary witnesses (TH04 near-ptr dispatch, TH05
-far-ptr dispatch, both decompiled end-to-end: loader → timed runner → self-rebind).
-The TH04↔TH05 diff (near+arg vs far pair; spawn-flag gating added) is itself the
-generalization: the dispatch convention is a per-binary choice, the *mechanism* is
-stable.
+**Status.** **proven** — binary witnesses (TH04 + TH05, dispatch-convention diff
+documented) + transfer test (`catalog/transfer-tests/M-3-self-mutating-dispatch/`):
+deferred rebind application makes cascading behavior **order-independent**
+(64-frame cascade identical under forward and reverse task ordering), while
+inline transitions make it implementation-defined (1 frame vs 64 frames on the
+same trigger). Cost recorded: one-frame-per-link cascade latency. The mechanism
+decomposes into dispatch-as-data (M-1) + the deferred-application discipline —
+the latter independently present in AW 1991 and TH04 1998, and continuously
+re-derived by modern task systems (deferred structural changes, command buffers).
