@@ -25,9 +25,11 @@ a transfer test with numbers.
 
 ## Status
 
-- **Target 0 (worked example): MarioXP** — complete. Proves the pipeline end-to-end.
-- **Target 1: Touhou TH04/TH05 (PC-98)** — in progress.
-- Full slate and ordering: `targets/README.md`.
+- **4 mechanisms proven** on modern stacks with runnable reproductions
+  (memory · scheduling · determinism · dispatch) — see **[SYNTHESIS.md](SYNTHESIS.md)**.
+- **9 mechanisms extracted** across 4 engine families (id Tech 1, Build,
+  Another World VM, Borland/Clickteam PC-98 era) — see `catalog/` and
+  `targets/README.md`.
 
 ## Rules
 
