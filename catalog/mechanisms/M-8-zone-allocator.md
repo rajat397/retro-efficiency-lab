@@ -32,5 +32,7 @@ per-object free patterns (fine for level-lifetime data, wrong for
 long-lived-mixed workloads); fragmentation within a tag class is the
 programmer's problem.
 
-**Status.** **cataloged** — two engine-family witnesses (id's Doom 1993,
-Silverman's Build 1996) with the tag-vs-lock variation documented.
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-8-zone-allocator/`:
+4.1× fewer GC pauses, 75% less GC time, 20% faster wall on identical
+transient-object workloads. Scope honesty: structural records are the
+transferable part in GC'd languages; content strings still allocate.

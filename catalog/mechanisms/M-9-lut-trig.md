@@ -30,5 +30,8 @@ Also the ancestor of quantized-precision ML inference.
 real Doom visual trait); tables must be regenerated if ranges change; bit-exact
 determinism pins the implementation against casual refactoring.
 
-**Status.** **cataloged** — three witnesses across id, Build, and Borland-era
-engines, including the data-file variant (LUTs as patchable assets).
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-9-lut-trig/`:
+8.6–9.7× throughput at volume; the load-bearing property is structural
+determinism (zero float ops in the fixed-point path → no ulp surface →
+cross-platform replay exact, the `tables.dat` discipline). Cost recorded:
+0.086° quantization.
