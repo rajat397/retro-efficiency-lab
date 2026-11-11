@@ -6,7 +6,7 @@ Evidence cards per `docs/methodology.md`. Status ladder: `single-witness` →
 Families: `determinism` · `zero-alloc` · `data-as-program` · `procedural` ·
 `streaming` · `format` · `lut` · `adaptive`
 
-Cataloged: **M-1, M-3, M-4, M-7** — M-4 and M-7 gained their second witnesses from
+Cataloged: **M-1, M-3, M-4, M-7, M-8, M-9** — M-4 and M-7 gained their second witnesses from
 Target 2 (Doom, official id source release), making the first cross-engine-family
 proofs.
 
@@ -20,8 +20,8 @@ proofs.
 | [M-6](M-6-procedural-bg.md) | Procedural background painter over bit-packed ring buffer | procedural | single-witness | TH04 |
 | [M-7](M-7-fnptr-composition.md) | Frame pipeline composed from hot-swapped function-pointer slots | data-as-program | **cataloged** | TH04 + Doom |
 
-| [M-8](M-8-zone-allocator.md) | Tagged zone allocator — free-by-tag pooled memory | zero-alloc | single-witness | Doom |
-| [M-9](M-9-lut-trig.md) | Precision-by-LUT: integer trig + slope tables | lut | single-witness | Doom |
+| [M-8](M-8-zone-allocator.md) | Tagged zone allocator — free-by-tag pooled memory | zero-alloc | **cataloged** | Doom + Duke3D |
+| [M-9](M-9-lut-trig.md) | Precision-by-LUT: integer trig + slope tables | lut | **cataloged** | Doom + Duke3D |
 
 Working set anchor (TH04 `MAIN.EXE`): ≈ **190 KB** total (154 KB image + 34.6 KB BSS)
 for the full gameplay engine; bullet pool = 440 × 26 B = 11.4 KB of that.

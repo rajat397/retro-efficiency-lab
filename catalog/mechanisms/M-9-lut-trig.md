@@ -6,12 +6,16 @@ than 1° resolution), slope ranges, and angle→sprite-index quantization (256
 directions) — so the sim uses only adds/compares, is bit-exact deterministic, and
 never touches FPU (1993: no FPU guaranteed; 2026: no fp-nondeterminism).
 
-**Witnesses.** Doom (official id source, `linuxdoom-1.10`): `tables.c` —
-`finetangent[4096]` (line 67), `finesine[10240]` (line 584) covering both
-`finecosine` via aliasing, `SLOPERANGE` clamping (lines 57–61); `m_fixed.c`
-Q16.16 (`FRACBITS=16`) multiply/shift. TH04 (ReC98): 256-direction sprite
-quantization (`ANGLE_PER_SPRITE = 0x80 / BULLET_D_CELS`), 8-bit subpixel speeds —
-the same discipline at 4-bit precision.
+**Witnesses.**
+1. **Doom** (id, 1993, official source): `tables.c` — `finetangent[4096]`,
+   `finesine[10240]` (finecosine via aliasing), `SLOPERANGE` clamps;
+   `m_fixed.c` Q16.16.
+2. **Duke Nukem 3D / Build** (Silverman, 1996, released source): `sintable[2048]`,
+   `radarang[640]`, `reciptable[2048]` — and the twist: the LUTs **ship as data**
+   (`kopen4load("tables.dat")` + `kread`, ENGINE.C:2013), not compiled in —
+   tables are patchable assets.
+3. TH04 (ReC98): 256-direction sprite quantization, 8-bit subpixel speeds —
+   the same discipline at 4-bit precision.
 
 **Evidence.** tables.c sizes and clamps (grep-verified); m_fixed.c FixedMul/
 FixedDiv implementations; TH04 pool records carry `angle` as one byte and
@@ -26,5 +30,5 @@ Also the ancestor of quantized-precision ML inference.
 real Doom visual trait); tables must be regenerated if ranges change; bit-exact
 determinism pins the implementation against casual refactoring.
 
-**Status.** single-witness (Doom deep, TH04 same-family note; a third
-non-shared-engine witness would make it cataloged).
+**Status.** **cataloged** — three witnesses across id, Build, and Borland-era
+engines, including the data-file variant (LUTs as patchable assets).

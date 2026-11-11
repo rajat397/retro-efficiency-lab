@@ -69,7 +69,7 @@ reproduction (`node bench.mjs` each), every claim evidence-backed and committed.
 | cataloged (≥2 witnesses, now 3 engine families) | **4** | M-1, M-3, M-4, M-7 |
 | single-witness | **3** | M-6, M-8, M-9 |
 
-Three engine families witnessed: id Tech 1 (Doom 1993), Chahi's AW VM (1991),
-Borland/Clickteam PC-98 era (TH04/TH05, MarioXP). M-3's self-mutating dispatch
+Four engine families witnessed: id Tech 1 (Doom 1993), Build (Duke3D 1996),
+Chahi's AW VM (1991), Borland/Clickteam PC-98 era (TH04/TH05, MarioXP). M-3's self-mutating dispatch
 mechanism appears in BOTH TH04 (1998) and Another World (1991) — 7 years apart,
 independent codebases.
