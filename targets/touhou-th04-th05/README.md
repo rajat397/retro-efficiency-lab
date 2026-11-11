@@ -53,3 +53,38 @@ Status: **in progress** (started 2026-11-12)
 3. **Stage enemies/bullet patterns = bytecode in `.STD` files** (data-as-program);
    **midboss/boss battles are hardcoded** in the executables. The split between
    scripted and compiled behavior is itself a mechanism to document.
+
+## Binaries acquired (2026-11-12)
+
+Source: archive.org item `touhou-pc-98-collection` (ZUN-freeware TH01–TH05, HDI disk
+images; analysis-only use — binaries are NOT committed to this repo).
+
+**Tooling built:** `/mnt/data/rea/touhou/extract_hdi.py` — parses Anex86/Neko HDI
+(4096-byte header), locates the embedded FAT volume by BPB plausibility (PC-98 disks
+use 1024-byte sectors!), handles FAT12 (TH04 uses 12-bit cluster chains), extracts the
+directory tree.
+
+**TH04 (東方幻想郷) files:**
+- `MAIN.EXE` 154,722 B (gameplay) · `MAINE.EXE` 68,194 B (easy-mode variant)
+- `OP.EXE` 75,840 B (menus) · `ZUN.COM` 7,754 B (diet-compressed launcher)
+- `GENSO1.EXE` 714,469 B / `GENSO2.EXE` 918,724 B — **stage/graphics data shipped as
+  executables** (data-as-program candidate to verify: code segments or disguised data?)
+- `PMD.COM` (PMD professional music driver, 20 KB) — FM music runs as an external
+  driver process; the game communicates with it (shared-memory note queue?)
+- 東方幻想郷ED.DAT 1.1 MB (ending data) · MIKO.CFG (config)
+
+**TH05 (東方怪綺談) files:**
+- `MAIN.EXE` 188,786 B · `MAINE.EXE` 120,059 B · `OP.EXE` 79,882 B · `KAIKI101.EXE`
+- `MUSIC.DAT` 610,990 B (music data) · two ~1 MB data DATs
+- Same ZUN.COM + PMD driver pattern.
+
+**Immediately visible architecture fact (compare with MarioXP M-1):** the game ships
+its heavy content as **executable-sized data blobs** chained from a small main program +
+a separate music-driver process — the 1990s equivalent of "small interpreter, big
+payload". Bullet patterns additionally live as `.STD` bytecode (ReC98).
+
+## Next session plan
+
+1. REA scope pass on `MAIN.EXE` (TH04) — format `dos-mz`, 16-bit x86 real mode.
+2. Answer Q1 (bullet pool) by finding the per-frame loop and bullet-slot array.
+3. Cross-validate against `nmlgc/ReC98` TH04 sources (read-only).
