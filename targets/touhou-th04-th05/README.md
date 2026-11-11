@@ -35,3 +35,21 @@ Status: **in progress** (started 2026-11-12)
 ## Findings
 
 (to be filled as sessions produce evidence)
+
+## Cross-reference located (2026-11-12)
+
+- **`nmlgc/ReC98`** (886⭐) — The Touhou PC-98 Restoration Project: byte-identical
+  source reconstruction of TH01–TH05. Cloned to `/mnt/data/opt/ReC98` (reference only).
+  Also uses DOSBox-X + **Neko Project II debug edition** for runtime observation.
+- **`N0zoM1z0/th04`** (36⭐) — standalone TH04 source reconstruction.
+
+## Early findings from ReC98 (pre-REA, documentary)
+
+1. **Multi-EXE architecture**: TH04 = `zun.com` + `op.exe` (menus) + `main.exe` +
+   `maine.exe` (gameplay variants). Whole game split across executables that chain-load.
+2. **Shared-library dominance**: `master.lib` + C runtime = **74% of OP.EXE** and
+   **40% of MAIN.EXE** code (ReC98 README). The *game-specific* code is the minority —
+   a direct calibration for our extraction effort.
+3. **Stage enemies/bullet patterns = bytecode in `.STD` files** (data-as-program);
+   **midboss/boss battles are hardcoded** in the executables. The split between
+   scripted and compiled behavior is itself a mechanism to document.
