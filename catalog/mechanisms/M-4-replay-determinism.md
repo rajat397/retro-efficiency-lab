@@ -26,7 +26,10 @@ debugging. Modern framing: store inputs, derive everything else.
 fixed-point/LUT discipline — see M-2's 8-bit subpixel speeds); recordings are useless
 across sim versions; input format changes break archives.
 
-**Status.** **cataloged** — two engine-family witnesses (TH04 1998 Borland/asm;
-Doom 1993 id Tech 1/C). The demo format differs (fixed-size block vs length-
-bounded stream with 0x80 sentinel) but the contract is identical: record inputs,
-derive everything else, replay = execution.
+**Status.** **proven** — binary-anchored witnesses (TH04 + Doom) + transfer test
+(`catalog/transfer-tests/M-4-replay-determinism/`): same input recording replayed
+under different machine-load jitter — fixed-tic/fixed-point sim byte-identical
+across all 12 state-hash checkpoints; the float/variable-dt sim diverged at the
+first checkpoint because dt-from-frame-time became part of the state equations.
+Sharpened generalization: input-only recordings and deterministic replay are one
+mechanism — *time is taken out of the state equations*.
