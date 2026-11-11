@@ -6,13 +6,13 @@ Evidence cards per `docs/methodology.md`. Status ladder: `single-witness` →
 Families: `determinism` · `zero-alloc` · `data-as-program` · `procedural` ·
 `streaming` · `format` · `lut` · `adaptive`
 
-Cataloged: **M-3, M-4, M-7** — M-4 and M-7 gained their second witnesses from
+Cataloged: **M-1, M-3, M-4, M-7** — M-4 and M-7 gained their second witnesses from
 Target 2 (Doom, official id source release), making the first cross-engine-family
 proofs.
 
 | ID | Mechanism | Family | Status | Witnesses |
 |---|---|---|---|---|
-| [M-1](M-1-event-vm.md) | Event-program-as-VM (behavior as data payload) | data-as-program | calibration | MarioXP |
+| [M-1](M-1-event-vm.md) | Event-program-as-VM (behavior as data payload) | data-as-program | **cataloged** | MarioXP + Another World |
 | [M-2](M-2-slot-pool.md) | Fixed-slot pool with in-record state machine | zero-alloc | **proven** | TH04 + transfer test |
 | [M-3](M-3-timed-vm.md) | Timed bytecode VM with self-mutating dispatch | data-as-program | **cataloged** | TH04 + TH05 |
 | [M-4](M-4-replay-determinism.md) | Replay determinism via fixed-size input recordings | determinism | **proven** | TH04 + Doom + transfer test |

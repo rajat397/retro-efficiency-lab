@@ -8,7 +8,7 @@ Selection principle: hard budget + public reconstruction + REA-fit + modern anal
 | 1 | [Touhou TH04/TH05](touhou-th04-th05/) | 1998 / PC-98 | 640KB conv + ext | bullet pool, fixed-slot entities, pattern-as-data | 🔄 in progress |
 | 2 | [Doom](doom/) | 1993 / DOS | 4MB RAM, 12MB disk | determinism, WAD resource system, LUTs | ✅ witnessed (M-4 also proven) |
 | 3 | RollerCoaster Tycoon | 1999 / Win32 | hand-written x86 asm | peep AI, no-alloc economy, sprite caching | ⏳ queued |
-| 4 | Another World | 1991 / Amiga→DOS | ~600KB whole game | bytecode VM, procedural animation | ⏳ queued |
+| 4 | [Another World](another-world/) | 1991 / Amiga→DOS | ~600KB whole game | bytecode VM, procedural animation | ✅ witnessed |
 | 5 | SCUMM (Monkey Island) | 1990-92 / DOS | resource-cached | resource system, LRU-as-memory-manager | ⏳ queued |
 | 6 | X-COM: UFO Defense | 1994 / DOS | 4MB RAM | snapshot architecture, tactical AI tables | ⏳ queued |
 | 7 | KKrieger / 64K intros | 2004 / Win32 | 96KB whole game | procedural-as-compression, soft-synth | ⏳ queued |
