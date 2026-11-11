@@ -73,3 +73,16 @@ Four engine families witnessed: id Tech 1 (Doom 1993), Build (Duke3D 1996),
 Chahi's AW VM (1991), Borland/Clickteam PC-98 era (TH04/TH05, MarioXP). M-3's self-mutating dispatch
 mechanism appears in BOTH TH04 (1998) and Another World (1991) — 7 years apart,
 independent codebases.
+
+## Lab scoreboard (2026-11-12, update 4)
+
+| Status | Count | Cards |
+|---|---|---|
+| proven | **2** | M-2, M-5 |
+| cataloged | **6** | M-1, M-3, M-4, M-7, M-8, M-9 |
+| single-witness | **1** | M-6 (procedural bg) |
+
+9 cards, 4 engine families, 2 runnable transfer tests. Remaining gaps:
+M-6 witness (candidates: RCT procedural terrain via OpenRCT2 RE docs,
+demoscene 64K procedural-as-compression) and M-3 transfer test (self-mutating
+dispatch as a modern pattern — scheduled as the novel test).
