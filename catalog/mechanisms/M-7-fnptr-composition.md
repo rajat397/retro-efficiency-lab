@@ -5,8 +5,16 @@ stage VM, phase handlers, render stages — called through RAM pointers that gam
 events (timers, script terminators, phase changes) rebind at runtime. The engine is a
 fixed pipeline whose behavior is whoever currently occupies each slot.
 
-**Witnesses.** TH04 `MAIN.EXE` (main loop decompiled); MarioXP's event VM is the
-same idea at a coarser grain (calibration-level witness).
+**Witnesses.**
+1. TH04 `MAIN.EXE` (main loop decompiled): a dozen function-pointer slots per
+   frame, rebound at runtime by game events.
+2. **Doom** (official id source, `linuxdoom-1.10`): the entire sim is
+   function-pointer composition — `P_RunThinkers` (p_tick.c:101–121) walks the
+   thinker list dispatching `currentthinker->function.acp1(currentthinker)`,
+   removal via a `-1` sentinel; per-object behavior is rebound by state changes:
+   `if (st->action.acp1) st->action.acp1(mobj)` (p_mobj.c:76–78) — monster/weapon
+   behavior lives in `mobjinfo_t.states[].action` DATA tables (info.h:1153),
+   swapped by `P_SetMobjState` at runtime.
 
 **Evidence.** (TH04, main game loop `FUN_1aaf_0098` @ `0x1ab88`, ev_65b626…)
 - Loop body calls, in order: input poll, `entry()`, `(*DAT_3134_428a)()` (player
@@ -31,5 +39,8 @@ without recompiling the loop.
 found only via xrefs); slot write ordering bugs produce one-frame glitches;
 indirect calls defeat inlining (irrelevant at 190 KB budgets, real at modern scale).
 
-**Status.** single-witness (MarioXP calibration witness exists at coarse grain;
-TH05 diff pending → `cataloged`).
+**Status.** **cataloged** — two engine-family witnesses (TH04 hot-swappable frame
+pipeline; Doom thinker/state action pointers). The Doom witness sharpens the
+generalization: the slots need not live in the frame loop — a per-entity dispatch
+over data-driven function pointers composes the same way (this is the direct
+ancestor of ECS vtables).
