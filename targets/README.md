@@ -60,3 +60,16 @@ claims — 1993 C/id Tech vs 1998 Borland/asm PC-98, same mechanisms.
 Day-one summary: 3 targets engaged (MarioXP calibration → TH04/TH05 deep → Doom),
 9 mechanisms extracted with binary anchors, 3 carried to *proven* with runnable
 reproduction (`node bench.mjs` each), every claim evidence-backed and committed.
+
+## Lab scoreboard (2026-11-12, update 3)
+
+| Status | Count | Cards |
+|---|---|---|
+| proven | **2** | M-2, M-5 |
+| cataloged (≥2 witnesses, now 3 engine families) | **4** | M-1, M-3, M-4, M-7 |
+| single-witness | **3** | M-6, M-8, M-9 |
+
+Three engine families witnessed: id Tech 1 (Doom 1993), Chahi's AW VM (1991),
+Borland/Clickteam PC-98 era (TH04/TH05, MarioXP). M-3's self-mutating dispatch
+mechanism appears in BOTH TH04 (1998) and Another World (1991) — 7 years apart,
+independent codebases.
