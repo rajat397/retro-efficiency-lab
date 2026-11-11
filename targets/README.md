@@ -21,6 +21,6 @@ Selection principle: hard budget + public reconstruction + REA-fit + modern anal
 
 ## Progress dashboard
 
-- Cards: 1 (single-witness, from MarioXP worked example)
-- Cataloged (≥2 witnesses): 0
-- Proven (transfer-tested): 0
+- Cards written: **7** (M-1 calibration, M-2..M-7 single-witness — see `catalog/`)
+- Cataloged (≥2 witnesses): 0 — TH05 diff pending for M-2/M-3/M-7
+- Proven (transfer-tested): 0 — first transfer test is the next milestone
