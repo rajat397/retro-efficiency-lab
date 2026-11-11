@@ -49,7 +49,7 @@ game mods.
 **Costs.** Data-driven logic is opaque to static analysis (our hidden-mode hunt required
 writing a full event-format decoder); debugging without the editor is painful.
 
-**Status.** single-witness.
+**Status.** calibration (weak budget claim — see ASSESSMENT.md; expected to become a proper card via TH04/TH05 `.STD` bytecode).
 
 ## Artifacts
 

@@ -69,3 +69,18 @@ modern stack). Unsurvivable learnings are dropped or narrowed, not kept for flav
 **Decision.** Analysis-only for copyrighted targets (learnings/mechanisms yes, assets
 no). Old software has survivorship bias — the card "costs" field and multi-witness rule
 are the counterweights. REA unknowns are recorded verbatim as the research backlog.
+
+## 2026-11-12 — Honest audit: MarioXP is calibration, not an efficiency exemplar
+
+**Decision.** Target 0's findings were audited against the thesis. M-1
+(Event-program-as-VM) is kept but downgraded to `calibration` — the architecture
+signal is real, but a fan game on a stock commercial engine does not satisfy the
+hard-budget criterion. Save encoding and hidden-mode machinery are documented as
+pipeline proof only, not cataloged.
+
+**Rationale.** The user asked directly whether MarioXP produced thesis-aligned
+learnings. Honest answer: mostly no. Guardrail applied: future targets must satisfy
+the budget criterion (constraint-forced design) — PC-98 TH04/TH05 qualifies
+(640KB-era bullet hell), which is why it is Target 1.
+
+**Effective rule.** "Works on REA" ≠ "meets the thesis." Both gates stay.
