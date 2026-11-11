@@ -6,7 +6,7 @@ Evidence cards per `docs/methodology.md`. Status ladder: `single-witness` →
 Families: `determinism` · `zero-alloc` · `data-as-program` · `procedural` ·
 `streaming` · `format` · `lut` · `adaptive`
 
-Cataloged: **M-1, M-3, M-4, M-6, M-7, M-8, M-9** — M-4 and M-7 gained their second witnesses from
+Cataloged: **M-1, M-3, M-4, M-6, M-7, M-8, M-9, M-10** — M-4 and M-7 gained their second witnesses from
 Target 2 (Doom, official id source release), making the first cross-engine-family
 proofs.
 

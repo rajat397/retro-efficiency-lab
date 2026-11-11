@@ -82,5 +82,5 @@ independent codebases.
 | cataloged | **7** | M-1, M-6, M-7, M-8, M-9 (M-4 dual-listed) |
 | single-witness | **0** | — |
 
-9 cards, 5 engine families (Elite 1984 added), 4 runnable transfer tests.
+10 cards, 5 engine families + RCT2 (Target 5 open), 4 runnable transfer tests.
 Full catalog sweep complete: every mechanism ≥ cataloged.
