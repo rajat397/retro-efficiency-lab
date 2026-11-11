@@ -135,3 +135,55 @@ the bullet pool is <4% of it.
 - **M-4 candidate** (`determinism`): `DEMO0.REC` replay demos. Anchor: input replay
   reader + fixed timestep loop.
 - **M-5 candidate** (new family `adaptive`?): measured slowdown instead of frame drops.
+
+## Binary anchoring session (2026-11-12, session 3) — M-2/M-3/M-4
+
+Ghidra snapshot reused (`/mnt/data/rea/touhou/th04-MAIN.EXE.snapshot`). All findings
+below carry REA evidence IDs; ReC98 used read-only for naming/orientation.
+
+### M-3 (.STD bytecode) — anchored
+
+- `0.STD` string @ `0x31c61`, referenced from **`FUN_1aaf_0be1` @ `0x1b6d1`**
+  (ev_00608d…, decompiled). The loader: builds the filename from the stage number,
+  reads the file, then walks **length-prefixed records** — a script-count header
+  followed by `[len][payload]` entries — building a **pointer table** into
+  `DAT_3134_3d7a[i]` (one entry per enemy script) plus a bytecode stream pointer
+  (`DAT_3134_3dba`). Two magic words stored (`0x23a9`, `0x4341`).
+- Interpreter (per-frame VM) not yet located — next target.
+
+### M-4 (replay determinism) — anchored, with a limitation
+
+- `DEMO0.REC` @ `0x3152d` has **no static xref** (ev_4dcb72…): ReC98's `demo.cpp`
+  explains why — `demo_fn[4] = '0' + demo_num` patches the digit at runtime.
+- ReC98 source (read-only): `demo_load()` = `hmem_allocbyte(sizeof(REC<DEMO_N>))` +
+  `file_read` — a **fixed-size input-frame recording**; `DemoPlay()` shifts recorded
+  inputs into the live input system. Replay determinism is architectural.
+- Open: decompile the binary's `demo_load`/`DemoPlay` counterparts (dynamic string
+  construction makes byte-search the way in).
+
+### M-2 (bullet pool) — partially anchored
+
+- **`cmp ax,0190h` (=400) × 4 sites** (ev_c0b98d…): 2 in CODE_3 @ `0x23ce8`,
+  `0x23d10` = pool-index helpers:
+  `slot = (i>>4 + DAT_3134_4278) mod 400` — the 400-slot pool indexed by computed
+  4.4-fixed indices, with optional rank-based base offset (`DAT_3134_427c`).
+- Stride-based location of `bullets_update` failed: no `sub reg,0x1A` hits —
+  my sizeof(bullet_t)=26 arithmetic doesn't match the compiled code (alignment or
+  MotionBase layout assumption wrong). Next: pull the true stride from ReC98's
+  matching build (their Tupfile generates `.map`/`diff` artifacts) instead of guessing.
+
+### Incidental find — procedural background (candidate M-6)
+
+- CODE_1 @ `0x1b9d6` (`FUN_1aaf_0ee6`, decompiled ev_9a753a…): procedural background
+  painter — same `mod 400` constant as the bullet pool but a **bit-packed 400-element
+  ring buffer** (`& 7`, `>> 3`, stride `0x20`), conditionally writing `1`s with
+  wraparound and a scroll-offset base (`DAT_3134_4260[]`). Matches ReC98's
+  `circle.cpp`/`circles[bss].asm` (the TH04 spinning-rings backgrounds).
+- Family: `data-oriented` / procedural. Two distinct systems sharing one buffer-size
+  constant — a caution for constant-based anchoring: verify semantics, don't assume.
+
+### Method note (added to methodology)
+
+Constant-based function discovery produced false positives here (two different
+400-element arrays). Rule: after a constant hit, decompile + semantic-check before
+claiming the anchor.
