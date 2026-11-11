@@ -240,3 +240,27 @@ pipeline as **function-pointer slots**: player move `(*DAT_428a)()`, stage VM
    needs ReC98 cross-diff to resolve bitfield packing.
 2. The second VM runner (offset 0x11c0) — decompile pending.
 3. Demo replay reader (binary side) — pending.
+
+## TH05 scope pass — second witness session start (2026-11-12, session 5)
+
+`MAIN.EXE` SHA-256 `9005136d…fda5d0`, dos-mz. Segments: CODE_0–5 ≈ 185 KB code,
+**DATA = 128 bytes** (vs TH04's 34.6 KB!) — min_alloc = 8 paras. **TH05 does not keep
+the bullet pool in static BSS**; ReC98's TH05 bullet tree shows the architecture
+diverged:
+
+- **Per-type sub-pools instead of one unified array**: `b4balls_add/render.asm`,
+  `cheetos_*.asm`, `lasers[bss].asm`, `swords_add_update.asm`, `b6ball.cpp`,
+  `laser.cpp` — typed pools with per-type update/render routines.
+- Pool likely allocated from master.lib's EMS/XMS heap (`hmem_*`) — consistent with
+  the tiny BSS.
+- Same family traits persist: `.asm` hot paths, patnum-based sprites, `cmp al,
+  PAT_BULLET16_D` grouping, gather/bullet interplay.
+
+**Second-witness value**: M-2's generalization claim ("fixed-slot pool") now has a
+*bounded variant* witness — same team, one year later, split the pool by bullet type
+and moved it out of BSS. The card's applicability conditions need updating: unified
+pool vs typed pools is a per-game tradeoff (SIMD-like linear sweep vs type
+dispatch), not an absolute.
+
+Next: locate TH05's per-type pool bases/sizes + its VM runner (offset 0x11c0
+equivalent), then write the TH04↔TH05 diff into M-2/M-3/M-7 → `cataloged`.
