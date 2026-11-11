@@ -28,4 +28,10 @@ netcode where dropped frames would not.
 discrete steps are only as smooth as their calibration; interactions with input
 latency need testing; useless for workloads that can't be counted cheaply.
 
-**Status.** single-witness.
+**Status.** **proven** — binary-anchored (TH04) + transfer-tested
+(`catalog/transfer-tests/M-5-measured-slowdown/`): under sustained 1.5×/2.0×
+overload, the measured rate-step bounds wall-clock lag at **8–17 ms** where the
+naive full-rate loop accumulates **49.8–99.6 s** of linear backlog. Rate degrades;
+entities and determinism do not. Limits: level 2 halves capacity — pair with the
+M-2 pool cap (TH04's actual two-layer design) or extend the ladder (4, 8) for
+deeper overload; difficulty scaling (`+diff*8`) maps to per-tier SLA classes.

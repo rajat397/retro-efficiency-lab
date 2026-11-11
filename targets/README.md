@@ -23,4 +23,4 @@ Selection principle: hard budget + public reconstruction + REA-fit + modern anal
 
 - Cards written: **7** — see `catalog/`
 - Cataloged (≥2 witnesses): **1** — M-3 (TH04 + TH05)
-- Proven (transfer-tested): **1** — M-2 (Node/V8, `catalog/transfer-tests/`)
+- Proven (transfer-tested): **2** — M-2 + M-5 (Node/V8, `catalog/transfer-tests/`)
