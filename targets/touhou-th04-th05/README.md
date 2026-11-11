@@ -88,3 +88,50 @@ payload". Bullet patterns additionally live as `.STD` bytecode (ReC98).
 1. REA scope pass on `MAIN.EXE` (TH04) — format `dos-mz`, 16-bit x86 real mode.
 2. Answer Q1 (bullet pool) by finding the per-frame loop and bullet-slot array.
 3. Cross-validate against `nmlgc/ReC98` TH04 sources (read-only).
+
+## REA scope pass on TH04 MAIN.EXE (2026-11-12, session 2)
+
+**Artifact.** `MAIN.EXE`, SHA-256 `592903e9…495a32`, DOS MZ, real-mode x86.
+Ghidra: 6 code segments (~150 KB), DATA 34,592 B, **920 procedures**, 72 strings.
+Evidence: `ev_d226cc…`, `ev_834a54…` (strings), snapshot
+`/mnt/data/rea/touhou/th04-MAIN.EXE.snapshot`.
+
+**String evidence (from the binary itself):**
+- `DEMO0.REC` — attract demo is a recorded input replay ⇒ deterministic fixed-step sim
+  is an architectural fact (Q3 partially answered; needs code confirmation)
+- `0.STD` referenced directly from MAIN.EXE ⇒ stage-enemy bytecode (Q2 partially answered)
+- `Borland C++ — Copyright 1993` ⇒ the engine is C++ (BC++ 4.x) + master.lib; the hot
+  inner loops are hand-written assembly (per ReC98's `.asm` files)
+- 24 spell-card names as plain strings (e.g. `Bad Apple!!`, `Alice Maestra`)
+- `GENSOU.SCR`, `0.CDG`, `0.MAP`, `00.mpn`, `GAMEFT.bft` — data-file surface
+
+**Cross-reference (ReC98, read-only):**
+- Pool = fixed BSS arrays: TH04 `PELLET_COUNT=180 + BULLET16_COUNT=220` (=400 bullets);
+  TH05 `240 + 200` (=440). `bullet_t` ≈ 18 B (TH04: flag/age/motion/group/speed/angle/
+  spawn_flag/move_flag/special_motion/patnum…; TH05 adds origin+distance). Pool ≈ 7.2 KB.
+- **Behavior as enum, not code**: `bullet_special_motion_t` = decelerate-then-turn(-aimed),
+  bounce L/R/T/B, gravity, speedup… — one dispatcher, zero per-bullet objects.
+- **Spawn flags as bitfields**, incl. 16 inline "cloud trail" bits (`BSF_CLOUD_*`)
+  inside the same 18-byte record — particle system embedded in the bullet struct.
+- **Separate render array** `pellet_render_t` (vram_offset + sprite_offset words) —
+  sim state decoupled from render state (PC-98 planar VRAM).
+- **Adaptive frame budget**: `slowdown.hpp` + `SLOWDOWN_BULLET_THRESHOLD = 24/32` +
+  `playperf.hpp` — the game measures live bullet count and *slows the simulation
+  rate* instead of dropping frames.
+- Hot loops are `.asm` files (`update[bss].asm`, `pellet_r.asm`, `template[bss].asm`);
+  `#pragma option -zP` pins code into the exact segments we saw in Ghidra.
+
+**MZ-header math (binary evidence):** load image = 154,722 B (the entire file);
+`min_alloc = 2162 paras = 34,592 B` zeroed beyond the image at load = the DATA/BSS
+segment REA saw. **Total engine working set ≈ 190 KB** for a full bullet-hell game —
+the bullet pool is <4% of it.
+
+## Candidate cards from this scope pass (to be evidence-anchored in REA next)
+
+- **M-2 candidate** (`zero-alloc`): fixed-slot bullet pool, behavior-as-enum, no
+  per-frame allocation. Anchor: find pool references + update loop in the binary.
+- **M-3 candidate** (`data-as-program`): `.STD` bytecode drives stage enemies; bosses
+  hardcoded. Anchor: the STD interpreter in MAIN.EXE.
+- **M-4 candidate** (`determinism`): `DEMO0.REC` replay demos. Anchor: input replay
+  reader + fixed timestep loop.
+- **M-5 candidate** (new family `adaptive`?): measured slowdown instead of frame drops.
