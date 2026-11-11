@@ -48,3 +48,15 @@ overload — a load-shedding primitive, paired with the pool cap in TH04's desig
 
 Target 2 (Doom) delivered: engine-family diversity for the catalog's "general"
 claims — 1993 C/id Tech vs 1998 Borland/asm PC-98, same mechanisms.
+
+## Lab scoreboard (2026-11-12, final)
+
+| Status | Count | Cards |
+|---|---|---|
+| **proven** (transfer-tested with numbers) | **3** | M-2 (zero-alloc pool), M-4 (replay determinism), M-5 (measured slowdown) |
+| **cataloged** (≥2 witnesses) | **3** | M-3 (timed VM), M-4 (also proven), M-7 (fnptr composition) |
+| single-witness | **3** | M-6, M-8, M-9 (+ M-1 calibration) |
+
+Day-one summary: 3 targets engaged (MarioXP calibration → TH04/TH05 deep → Doom),
+9 mechanisms extracted with binary anchors, 3 carried to *proven* with runnable
+reproduction (`node bench.mjs` each), every claim evidence-backed and committed.
