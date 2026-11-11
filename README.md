@@ -23,6 +23,12 @@ a transfer test with numbers.
 | `targets/` | Per-target working notes, one folder per game/app |
 | `sessions/` | Dated session logs: discussions, findings, open threads |
 
+## Spinoff product
+
+**[tide](https://github.com/rajat397/tide)** — agent-first IDE (Task Integration & Dispatch
+Environment): manage tens of agents through worktree pools, gated merges and
+batched PRs, built from this lab's proven mechanisms.
+
 ## Status
 
 - **4 mechanisms proven** on modern stacks with runnable reproductions

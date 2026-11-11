@@ -1,0 +1,15 @@
+{
+  "name": "tide",
+  "version": "0.1.0",
+  "description": "Tiny IDE built from reverse-engineered 1990s efficiency disciplines (slot pools, index-linked lists, deferred application, replayable command log, bounded search)",
+  "type": "module",
+  "main": "tide.mjs",
+  "bin": { "tide": "tide.mjs" },
+  "scripts": {
+    "start": "node tide.mjs",
+    "test": "node test.mjs",
+    "bench": "node bench.mjs"
+  },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}
