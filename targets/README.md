@@ -79,8 +79,8 @@ independent codebases.
 | Status | Count | Cards |
 |---|---|---|
 | proven | **4** | M-2, M-3, M-4, M-5 |
-| cataloged | **4** | M-1, M-7, M-8, M-9 |
-| single-witness | **1** | M-6 (procedural bg) |
+| cataloged | **7** | M-1, M-6, M-7, M-8, M-9 (M-4 dual-listed) |
+| single-witness | **0** | — |
 
-9 cards, 4 engine families, 4 runnable transfer tests. Remaining: M-6 witness
-(demoscene 64K = natural fit), then the synthesis piece.
+9 cards, 5 engine families (Elite 1984 added), 4 runnable transfer tests.
+Full catalog sweep complete: every mechanism ≥ cataloged.

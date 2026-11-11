@@ -1,12 +1,20 @@
-### M-6 Procedural background painter over a bit-packed ring buffer (`procedural`)
+### M-6 Procedural generation from compact seeds/state (`procedural`)
 
-**Mechanism.** Scrolling backgrounds are not stored — a painter walks a fixed
-400-element ring buffer of bit flags (`& 7`, `>> 3`, stride `0x20`), conditionally
-writing bits with wraparound and a scroll-offset base, deriving the visible pattern
-each frame from state + position.
+**Mechanism.** Content is not stored — it is derived each frame from tiny compact
+state (seed words, bit-packed ring buffers) through deterministic transforms. Two
+faces of the same discipline: a *painter* deriving visible patterns from a ring
+buffer of flags, and a *generator* deriving worlds from seed words.
 
-**Witnesses.** TH04 `MAIN.EXE` (`FUN_1aaf_0ee6` @ `0x1b9d6`); ReC98
-`th04/main/circle.cpp` + `circles[bss].asm` (the TH04 spinning-rings backgrounds).
+**Witnesses.**
+1. **TH04** `MAIN.EXE` (`FUN_1aaf_0ee6` @ `0x1b9d6`); ReC98 `th04/main/circle.cpp`
+   + `circles[bss].asm` — background painter over a bit-packed 400-element ring
+   buffer (pattern derived from state + scroll, zero stored art).
+2. **Elite** (Braben & Bell, 1984; canonical algorithm per Ian Bell's released
+   sources, implementation cross-checked via `jrmhaig/elite_universe`): the galaxy
+   generator — `twist(arr) = [arr[1], arr[2], arr.sum % 65536]`, a Fibonacci-style
+   16-bit shift register over **three seed words (48 bits)**; 4 twists per planet
+   yield name/government/economy/position/tech for **256 planets × 8 galaxies**;
+   `planet.rb:33-46`.
 
 **Evidence.**
 - Decompiled `FUN_1aaf_0ee6` (ev_9a753a…): `param_1 >> 4` (8.4 subpixel), range
@@ -18,13 +26,14 @@ each frame from state + position.
   offset table.
 - Zero stored art for the pattern; the renderer derives shape from the bit ring.
 
-**Generalization.** Web/app backgrounds, shader-free decorative layers, embedded
-UIs: store a generator + small ring of state instead of frames of art; bit-packed
-occupancy rings generalize to any grid-marking problem (chat badges, cache slots,
-spatial hashes).
+**Generalization.** Store a generator + seeds instead of artifacts: modern
+avatars from user IDs, hash-seeded test data, noise textures from seeds,
+Minecraft/No Man's Sky worlds, and deterministic generated test fixtures. The
+Elite twist-register is the pattern's minimum form: content-addressable-by-seed.
 
-**Costs.** Patterns are limited to what the painter can express (no arbitrary art);
-bit-twiddling costs code size and debugging clarity; ring wraparound artifacts
-must be deliberately hidden.
+**Costs.** Patterns limited to what the generator expresses (no arbitrary art);
+quantization artifacts (Elite's "horace" names); deterministic but sequence-
+locked — regenerating item N requires items 0..N-1 (or checkpointed seeds).
 
-**Status.** single-witness.
+**Status.** **cataloged** — two engine-family witnesses (TH04 painter 1998;
+Elite generator 1984) under the generalized mechanism: content from compact state.
