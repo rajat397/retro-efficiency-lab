@@ -36,4 +36,10 @@ the difficulty envelope); records waste bytes when empty (26 B × 440 always res
 no per-entity polymorphism — behaviors must fit the enum/flag budget; index-based
 referencing breaks if slots are compacted.
 
-**Status.** single-witness.
+**Status.** **proven** — binary-anchored (TH04) + transfer-tested on Node 22/V8
+(`catalog/transfer-tests/M-2-slot-pool/`): allocations 247,977 → 0; peak heap
+2.5–4.5× lower at both scales; modern-scale (4096 slots) timing 1.0–1.9× avg /
+1.1–2.8× p95 in the pool's favor; at TH04's 440-slot scale in V8, speed is a tie —
+the portable win is memory determinism, not raw speed at small scale. Three
+implementation invariants discovered by the test itself (age advance, single
+ownership-transfer point, RNG parity) are documented in the test README.

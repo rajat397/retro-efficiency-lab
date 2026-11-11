@@ -21,6 +21,6 @@ Selection principle: hard budget + public reconstruction + REA-fit + modern anal
 
 ## Progress dashboard
 
-- Cards written: **7** (M-1 calibration, M-2..M-7 single-witness — see `catalog/`)
-- Cataloged (≥2 witnesses): 0 — TH05 diff pending for M-2/M-3/M-7
-- Proven (transfer-tested): 0 — first transfer test is the next milestone
+- Cards written: **7** — see `catalog/`
+- Cataloged (≥2 witnesses): **1** — M-3 (TH04 + TH05)
+- Proven (transfer-tested): **1** — M-2 (Node/V8, `catalog/transfer-tests/`)
