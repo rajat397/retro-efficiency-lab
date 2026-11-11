@@ -27,6 +27,8 @@ O(list) unlink.
 historical save-corruption bugs live here); index instability on swap-free
 slots; in-record variant costs per-record bytes for the discriminator.
 
-**Status.** **cataloged** — two engine-family witnesses (Build 1996, RCT2
-2002). Natural transfer test: full-pool scan vs list-walk iteration at
-modern scale (candidate for the next bench).
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-10-index-linked-lists/`:
+query cost scales with the SUBSET (3.8× at 1k, 11.3× at 25k of a 65k pool),
+churn 143ns/op with the discriminator discipline, and the RCT2
+linked-list-corruption failure mode reproduced live (undisciplined unlink).
+In-product receipt: TIDE search walks only the target buffer (3.7×).

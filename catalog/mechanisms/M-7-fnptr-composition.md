@@ -39,8 +39,8 @@ without recompiling the loop.
 found only via xrefs); slot write ordering bugs produce one-frame glitches;
 indirect calls defeat inlining (irrelevant at 190 KB budgets, real at modern scale).
 
-**Status.** **cataloged** — two engine-family witnesses (TH04 hot-swappable frame
-pipeline; Doom thinker/state action pointers). The Doom witness sharpens the
-generalization: the slots need not live in the frame loop — a per-entity dispatch
-over data-driven function pointers composes the same way (this is the direct
-ancestor of ECS vtables).
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-7-fnptr-composition/`:
+fnptr table dispatch **faster** than a fair 100-case switch control on V8
+(38.6 vs 60.1 ns/transition, identical arithmetic), new behaviors attach as
+data with the dispatcher untouched, composed-machine replay IDENTICAL.
+Costs: polymorphic call site (JIT-dependent), no-jit engines may invert.
