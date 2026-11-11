@@ -27,7 +27,9 @@ a transfer test with numbers.
 
 **[tide](https://github.com/rajat397/tide)** — agent-first IDE (Task Integration & Dispatch
 Environment): manage tens of agents through worktree pools, gated merges and
-batched PRs, built from this lab's proven mechanisms.
+batched PRs, built from this lab's proven mechanisms. **Live:** 26 headless
+tests green + real end-to-end verified (dispatch → agent → gate → batched
+merge → commits → PR-ready branches, worktree cleanup, replayable log).
 
 ## Status
 
