@@ -24,3 +24,16 @@ Selection principle: hard budget + public reconstruction + REA-fit + modern anal
 - Cards written: **7** — see `catalog/`
 - Cataloged (≥2 witnesses): **1** — M-3 (TH04 + TH05)
 - Proven (transfer-tested): **2** — M-2 + M-5 (Node/V8, `catalog/transfer-tests/`)
+
+## Lab scoreboard (2026-11-12, end of day)
+
+| Status | Count | Cards |
+|---|---|---|
+| proven (transfer-tested with numbers) | **2** | M-2 (zero-alloc pool), M-5 (measured slowdown) |
+| cataloged (≥2 binary witnesses) | **1** | M-3 (timed VM, TH04+TH05) |
+| single-witness | 4 | M-4, M-6, M-7 (+ M-1 calibration) |
+
+Transfer tests: `catalog/transfer-tests/` — M-2 (Node/V8), M-5 (deterministic model).
+Both proved the mechanism transfers; both sharpened the claims (M-2: the win is
+memory determinism, not speed at small scale; M-5: the win is bounded latency under
+overload — a load-shedding primitive, paired with the pool cap in TH04's design).
