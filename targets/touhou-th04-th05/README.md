@@ -187,3 +187,56 @@ below carry REA evidence IDs; ReC98 used read-only for naming/orientation.
 Constant-based function discovery produced false positives here (two different
 400-element arrays). Rule: after a constant hit, decompile + semantic-check before
 claiming the anchor.
+
+## Anchoring session 4 (2026-11-12) — main loop, stage VM, bullet system, slowdown
+
+### The main game loop found — `FUN_1aaf_0098` @ `0x1ab88` (CODE_1)
+
+Decompiled (ev_65b626…). A single `do { … } while(!quit)` containing the full frame
+pipeline as **function-pointer slots**: player move `(*DAT_428a)()`, stage VM
+`(*DAT_4646)(seg)`, render/updaters, plus:
+- per-frame derived mods: `frame & 1/2/4/8/16` → the `stage_frame_mod2` family
+- PC-98 GDC page flip via ports `out 0xa4/0xa6` (double buffering in hardware)
+- difficulty-adjusted frame divisor (`6000 - diff*500`, floor 1000)
+
+### M-3 COMPLETE — the stage VM, hot-swapping its own interpreter
+
+- `stage_vm` = near function pointer @ `DAT_3134_4646` (linear `0x35986`); loader
+  (`std_load` @ 0x1b6d1) stores `0x4341`; xrefs: main loop call site, loader, and the
+  VM itself.
+- **`std_run` = `FUN_23a9_4341` @ `0x27dd1`** (CODE_3, offset 0x4341 — Ghidra named it
+  from the segment:offset). Decompiled behavior: if `*std_ip == frame_low_byte`
+  (timed opcodes!), consume a count, iterate 4-byte spawn records calling the
+  enemy-spawn handler `FUN_23a9_4263`, and on a `0` terminator **rewrite its own
+  dispatch pointers** (`DAT_4646 = 0x11c0`, `DAT_4648 = 0x1aaf`) — the interpreter
+  swaps itself for the next VM phase.
+- **Mechanism captured**: the VM is not a fixed interpreter — it's a bytecode stream
+  with per-frame timing whose *dispatch table is mutated by the bytecode it runs*.
+- Callers pass the data segment (`0x23a9`) as an argument — near-code/far-data split.
+
+### M-2 MOSTLY COMPLETE — bullet system update decompiled
+
+`FUN_23a9_8e38` @ `0x2c8c8` (ev_3363f9…), key binary facts:
+- Pool base `DAT_3134_86b8` (linear `0x399F8`), **0x1b8 = 440 slots** (240 pellets +
+  200 16×16 — correcting the earlier game/size pairing), **stride `0x1A` = 26 bytes,
+  iterated backward** (`pbVar8 += -0x1a`), matching ReC98's backward iteration.
+- Flag machine verbatim: `flag==2 (F_REMOVE) → 0 (F_FREE)`; `flag==0 → skip`.
+- Decay verbatim: `move_flag < 4 (BMF_DECAY) → = 4`, decay patnums `0x70`/`0x6c`
+  (16×16 vs pellet), decay timer counts up → destroy at `> 0x13`.
+- Kill scoring +10/+100 by bullet size; graze counter capped at **999**
+  (`DAT_3134_bcbc`); bullet-player hitbox → `DAT_3134_4669 = 1` (death flag).
+- Render record pass: `(x >> 4) + 0x1c` and the mod-400 helper (`FUN_23a9_0258`)
+  written into a render array — sim/render split visible in the hot loop.
+- **M-5 ANCHORED**: end-of-loop `bullets_seen` vs `DAT_3134_5395 + 0x18 +
+  DAT_4348*8` → `DAT_3134_5390 = 2` — measured slowdown (fewer bullets → faster
+  sim) inside the update loop itself, threshold scaled by difficulty.
+- `FUN_23a9_6454` @ `0x29ee4`: timed triple function-pointer hot-swap
+  (`frame == trigger → 46b4/46ba/46b6`) — phase/composition machinery.
+
+### Residual unknowns
+
+1. Exact field map for offsets 0x12/0x13 (spawn_flag bitfield vs mode byte) — the
+   compiled code uses `move_flag`-looking decay in byte 19 and a multi-state byte 18;
+   needs ReC98 cross-diff to resolve bitfield packing.
+2. The second VM runner (offset 0x11c0) — decompile pending.
+3. Demo replay reader (binary side) — pending.
