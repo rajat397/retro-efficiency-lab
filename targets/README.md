@@ -37,3 +37,14 @@ Transfer tests: `catalog/transfer-tests/` — M-2 (Node/V8), M-5 (deterministic 
 Both proved the mechanism transfers; both sharpened the claims (M-2: the win is
 memory determinism, not speed at small scale; M-5: the win is bounded latency under
 overload — a load-shedding primitive, paired with the pool cap in TH04's design).
+
+## Lab scoreboard (2026-11-12, update 2)
+
+| Status | Count | Cards |
+|---|---|---|
+| proven | **2** | M-2, M-5 |
+| cataloged (≥2 witnesses, cross-engine) | **3** | M-3 (TH04+TH05), M-4 (TH04+Doom), M-7 (TH04+Doom) |
+| single-witness | **4** | M-6, M-8, M-9 (+ M-1 calibration) |
+
+Target 2 (Doom) delivered: engine-family diversity for the catalog's "general"
+claims — 1993 C/id Tech vs 1998 Borland/asm PC-98, same mechanisms.
