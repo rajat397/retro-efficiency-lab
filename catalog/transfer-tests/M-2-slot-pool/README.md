@@ -91,3 +91,18 @@ M-2 status → **proven** (evidence: binary anchors + this transfer test).
 Generalization note added: on 1998-era budgets the mechanism was *mandatory*
 (no RAM to waste); on modern stacks it is an *opt-in discipline* whose wins are
 memory determinism and allocation-freedom, not raw speed at small scale.
+
+## Diligence notes (2026-11-13, from external review)
+
+- **Baseline fairness.** The naive side is the standard modern idiom — object
+  literals pushed to a plain array, swept in place (`.filter` variant) — written
+  with the same tooling and effort as the pool side, and documented as good-faith
+  (no strawman shortcuts; see bench header). The load-bearing metric is
+  *allocation count* (247,977 → 0 and 26,605 → 0 across two scenarios, exactly
+  reproducible across repeated runs because it is counted, not timed).
+- **Reproducibility.** Allocation counts and live-set averages are exact across
+  repeated runs. Wall-clock speedup is NOT stable across hosts (observed
+  0.85×–2.62× avg / 0.25×–3.21× p95) — the headline is the allocation and
+  GC-count columns; treat timing as directional. Recorded in
+  `docs/LEARNINGS.md` §1 (deterministic metrics are load-bearing; timing is
+  labeled noisy).

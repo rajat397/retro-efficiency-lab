@@ -59,3 +59,24 @@ Do not soften the pitch. Raise the artifacts. The failing points become work ite
 Pitch rule going forward: every sentence in a pitch must trace to a repo file, and
 anything not yet measured is named as such in the same breath — which is only
 possible because the honest-limits lines are maintained.
+
+## Update 2026-11-13 (external skeptical review intake)
+
+A full external review (recorded with dispositions in
+`docs/CRITICISM-LOG-2026-11-13.md`) sharpened the claims further:
+- M-5's headline lag number was a run-length artifact — corrected to
+  lag-growth-rate (0.996 s-lag/s naive, linear) vs horizon-invariant ~17ms;
+  the property is the CONTRAST.
+- M-2 timing demoted to directional; the counted metrics (allocations 247,977 → 0
+  and 26,605 → 0) are the load-bearing headline.
+- M-4/M-9 determinism scoped: single-host, jitter-variation evidence; the
+  cross-platform matrix is untested and named as such. The x87/SSE finding is
+  interpreter-vs-JIT inside one engine — a different mechanism from LLM
+  batch nondeterminism; the determinism SKU is engine-controlled systems.
+- M-12 upgraded: multi-seed reproducibility (3 seeds, medians reported), and the
+  counterfactual capacity proof (the measurement product wedge) now prints
+  required-quota/finish-time/lever trade-offs from the measured workload.
+- Product steer adopted: measurement-first capacity proof for ingestion/agent
+  fleets; "1998's mistakes" framing retired in favor of "the agent layer rebuilt
+  known distributed-systems failures without the operational discipline — here
+  is what that discipline is worth, measured."
