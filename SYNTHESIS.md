@@ -128,7 +128,11 @@ never-replayable, order-independent vs implementation-defined.**
   real gamecode (B52) through the same engine: CG_INIT interpreted vs JIT'd
   = 10.3× at identical 74,184 syscalls; JIT load prep costs 2.4× more but
   the JIT'd image is smaller than the interpreter's 4×-expanded word image.
-  `targets/qvm/findings-openarena.md`.
+  `targets/qvm/findings-openarena.md`. A real syscall layer then drove the
+  actual frame loop: 60 CG_DRAW_ACTIVE_FRAME at identical 79,416 syscalls —
+  3.3M vs 0.6-0.9M cycles/frame ≈ 4.3× (real frames make 1,289
+  mode-independent syscall traps/frame, diluting the ratio)
+  `targets/qvm/findings-openarena-frames.md`.
 - **Scale honesty:** at TH04's own scale, V8 makes most of this free — the
   mechanisms matter when populations, traffic, or correctness requirements grow
   past the defaults' comfort zone (exactly where modern systems live).

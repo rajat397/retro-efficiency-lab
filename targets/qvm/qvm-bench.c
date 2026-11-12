@@ -190,11 +190,45 @@ static inline unsigned long long rdtsc( void ) {
 /* syscall side: counts traps, returns a fixed value */
 static long long syscallCount = 0;
 
+vm_t *benchVM = NULL;	/* for oa-syscalls.c VMA translation */
+
 static intptr_t QDECL syscalls( intptr_t *parms ) {
 	(void)parms;
 	syscallCount++;
 	return 42;
 }
+
+#ifdef QVM_OA
+/* OpenArena mode: real syscall layer, INIT then a frame loop */
+extern intptr_t oaSyscall( intptr_t *parms );
+extern void oaSyscallReport( void );
+
+static int runOa( vm_t *vm, long frames ) {
+	unsigned long long t0 = rdtsc();
+	VM_Call( vm, 0, 0, 0, 0, 0 );	/* CG_INIT / GAME_INIT / UI_INIT */
+	unsigned long long t1 = rdtsc();
+	fprintf( stderr, "INIT: %llu cycles\n", t1 - t0 );
+
+	unsigned long long *samples = malloc( sizeof( unsigned long long ) * frames );
+	for ( long i = 0; i < frames; i++ ) {
+		unsigned long long f0 = rdtsc();
+		VM_Call( vm, 3, 0, 16, 0, 0 );	/* CG_DRAW_ACTIVE_FRAME(client 0, 16 ms) */
+		unsigned long long f1 = rdtsc();
+		samples[i] = f1 - f0;
+	}
+	unsigned long long sum = 0, min = ~0ULL, max = 0;
+	for ( long i = 0; i < frames; i++ ) {
+		sum += samples[i];
+		if ( samples[i] < min ) min = samples[i];
+		if ( samples[i] > max ) max = samples[i];
+	}
+	printf( "module=oa-frames frames=%ld avg=%.0f min=%llu max=%llu cycles/frame\n",
+			frames, (double)sum / frames, (unsigned long long)min, (unsigned long long)max );
+	free( samples );
+	oaSyscallReport();
+	return 0;
+}
+#endif
 
 /* ---------------- main -------------------------------------------------- */
 
@@ -215,11 +249,20 @@ int main( int argc, char **argv ) {
 	}
 	double opsPerIteration = 0.0;
 
+	intptr_t (QDECL *handler)( intptr_t * ) = syscalls;
+#ifdef QVM_OA
+	int oaMode = 0;
+	long oaFrames = 1;
+	if ( argc > 3 && !strcmp( argv[3], "oa" ) ) { oaMode = 1; oaFrames = atol( argv[2] ); }
+	else if ( argc > 4 && !strcmp( argv[4], "oa" ) ) { oaMode = 1; oaFrames = atol( argv[3] ); }
+	if ( oaMode ) handler = oaSyscall;
+#endif
+
 #ifdef QVM_BENCH_COMPILED
 	vm_t *vm;
 	{
 		unsigned long long t0 = rdtsc();
-		vm = VM_Create( module, syscalls, VMI_COMPILED );	/* vm_x86 JIT */
+		vm = VM_Create( module, handler, VMI_COMPILED );	/* vm_x86 JIT */
 		unsigned long long t1 = rdtsc();
 		fprintf( stderr, "VM_Create (JIT compile): %llu cycles\n", t1 - t0 );
 	}
@@ -227,10 +270,15 @@ int main( int argc, char **argv ) {
 	vm_t *vm;
 	{
 		unsigned long long t0 = rdtsc();
-		vm = VM_Create( module, syscalls, VMI_BYTECODE );	/* interpreter */
+		vm = VM_Create( module, handler, VMI_BYTECODE );	/* interpreter */
 		unsigned long long t1 = rdtsc();
 		fprintf( stderr, "VM_Create (interpreter prep): %llu cycles\n", t1 - t0 );
 	}
+#endif
+	benchVM = vm;
+
+#ifdef QVM_OA
+	if ( oaMode ) return runOa( vm, oaFrames );
 #endif
 	if ( !vm ) { fprintf( stderr, "VM_Create(%s) failed\n", module ); return 2; }
 

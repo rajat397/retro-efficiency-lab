@@ -32,4 +32,13 @@ gcc $CFLAGS -DDEBUG_VM $INC qvm-bench.c bench-glue.c \
 	"$IOQ3/code/qcommon/vm.c" "$IOQ3/code/qcommon/vm_interpreted.c" \
 	-o qvm-trace
 
-echo "built: qvm-bench-interp qvm-bench-compiled qvm-trace + vm/{loop,mul,syscall}.qvm"
+# 5. OpenArena bench: real gamecode + real syscall layer (INIT + frame loop)
+gcc $CFLAGS -DQVM_OA $INC qvm-bench.c bench-glue.c oa-syscalls.c \
+	"$IOQ3/code/qcommon/vm.c" "$IOQ3/code/qcommon/vm_interpreted.c" -lm \
+	-o oa-bench-interp
+
+gcc $CFLAGS -DQVM_OA -DQVM_BENCH_COMPILED $INC qvm-bench.c bench-glue.c oa-syscalls.c \
+	"$IOQ3/code/qcommon/vm.c" "$IOQ3/code/qcommon/vm_interpreted.c" \
+	"$IOQ3/code/qcommon/vm_x86.c" -lm -o oa-bench-compiled
+
+echo "built: qvm-bench-{interp,compiled} qvm-trace oa-bench-{interp,compiled} + vm/*.qvm"

@@ -29,3 +29,12 @@ char *va( const char *format, ... ) {
 /* dbg-copy instrumentation state */
 unsigned long long dbgOpCount = 0;
 int dbgDump = 1;
+
+#include <signal.h>
+extern volatile int oaCurrentTrap;
+static void oaSev( int sig ) {
+	fprintf( stderr, "SIGSEGV while servicing trap id=%d\n", oaCurrentTrap );
+	signal( sig, SIG_DFL );
+	raise( sig );
+}
+__attribute__((constructor)) static void oaSevInit( void ) { signal( SIGSEGV, oaSev ); }

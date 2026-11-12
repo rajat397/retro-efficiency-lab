@@ -122,3 +122,17 @@ Load-time asymmetry now measured: interpretation wins startup (2.4× cheaper
 prep), JIT wins steady-state (10×) and even the memory footprint (1.1 vs
 1.5 MB). "Interpret cold, compile hot" now has numbers for both sides of
 the trade.
+
+## MEASURED upgrade (2026-11-13): the boundary dilutes the ratio
+
+A real syscall layer drove the actual OpenArena frame loop through both
+engine modes (`targets/qvm/findings-openarena-frames.md`), controlled by
+identical syscall counts (79,416, 0 unknown, both modes):
+
+- **Real frame ratio ≈ 4.3×** (3.3M vs 0.6–0.9M cycles/frame) — much lower
+  than the synthetic 10–19×, because a real frame makes **1,289 syscall
+  traps** (≈550 HUD draw calls alone) at ~16 cycles each, mode-independent.
+- Boundary-heavy workloads (games!) compress the interpreter/JIT gap;
+  compute-heavy loops widen it. The decision rule now has the shape:
+  *the closer the workload lives to the C boundary, the less the dispatch
+  tax matters — and the fewer reasons a JIT can pay for itself.*
