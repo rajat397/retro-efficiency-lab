@@ -5,7 +5,12 @@ event program stored in a data file, interpreted by a small fixed runtime — ga
 specific code is ~zero; behavior ships as payload.
 
 **Witnesses.**
-- **SQLite** (2000–, official source): the VDBE — `sqlite3VdbeExec`
+- **SQLite** (2000–, official source; **measured**): VDBE dispatch floor
+  **45 hw cycles/op**, Column at 68 — interpretation ≈ 3% of a point
+  query's cycles; Transaction lifecycle dominates (77%). Built with
+  `-DVDBE_PROFILE`; upstream amalgamation bug patched en route
+  (`targets/sqlite/findings-vdbe-profile.md`).
+- **SQLite** (2000–, official source, traced): the VDBE — `sqlite3VdbeExec`
   (`src/vdbe.c:903`, ~200 opcode arms) interprets compiled query programs;
   real EXPLAIN dumps show 15–49-op programs with Gosub/Return subroutines
   and Rewind/Next loops (`targets/sqlite/findings-VDBE.md`). The hybrid

@@ -65,8 +65,20 @@ For a behavior that runs 100k ops/sec (~1% of a core), T=15: the tax costs
 behavior cheaper. For a 10M ops/sec inner loop, the tax costs a full core —
 no pipeline is worth that; compile it.
 
-## Recorded for the catalog
+## MEASURED upgrade (2026-11-12): the floor of interpretation
 
-This decision is *derived from the lab's own measurements* — the honest
-scope: numbers are V8-specific for the tax; SQLite/Q3 anchors below are
-being added as Target 6/7 evidence lands.
+Compiled SQLite from source with its VDBE profiler and measured per-op
+hardware cycles on a 10k-row indexed workload (see
+`targets/sqlite/findings-vdbe-profile.md`):
+
+- **Dispatch floor: 45 hw cycles/op** (Noop) — roughly one branch-miss
+- Most-executed op (Column, 23k execs): 68 cycles — ~1.5× the floor
+- **Dominant cost of a point query: Transaction+Halt lifecycle**
+  (14.6k cycles avg) — 77% of the program's cycles; interpretation ≈ 3%
+
+So the tax in the arithmetic above is an *upper bound measured when
+interpretation replaces compiled work* (V8, 10–22×); SQLite's production
+interpreter shows the absolute floor is negligible next to any real work
+sharing the statement. The rule stands, strengthened: the lifecycle and
+I/O-adjacent compiled work dominate; interpretation of *cold control* is
+effectively free.
