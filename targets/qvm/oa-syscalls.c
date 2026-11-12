@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
+#include <math.h>
 #include <strings.h>
 
 #include "q_shared.h"
@@ -83,6 +84,140 @@ static const char *oaConfigStrings[64] = {
 	[20] = "baseoa-1",	/* CS_GAME_VERSION */
 	[21] = "0",			/* CS_LEVEL_START_TIME */
 };
+
+/* ---- snapshot / renderer front-end state --------------------------------- */
+/* structs copied verbatim from OpenArena headers (tr_types.h, q_shared.h) */
+
+typedef struct {
+	trType_t	trType;
+	int			trTime;
+	int			trDuration;
+	vec3_t		trBase;
+	vec3_t		trDelta;
+} oaTrajectory_t;
+
+#define OA_MAX_SNAP_ENTITIES	256
+#define OA_SNAP_ENTITIES		16						/* entities per snapshot (small skirmish) */
+typedef struct {
+	int				snapFlags;
+	int				ping;
+	int				serverTime;
+	byte			areamask[MAX_MAP_AREA_BYTES];
+	playerState_t	ps;
+	int				numEntities;
+	entityState_t	entities[OA_MAX_SNAP_ENTITIES];
+	int				numServerCommands;
+	int				serverCommandSequence;
+} oaSnapshot_t;
+
+typedef struct {
+	vec3_t		xyz;
+	float		st[2];
+	byte		modulate[4];
+} oaPolyVert_t;
+
+typedef enum {
+	OA_RT_MODEL, OA_RT_POLY, OA_RT_SPRITE, OA_RT_BEAM, OA_RT_RAIL_CORE,
+	OA_RT_RAIL_RINGS, OA_RT_LIGHTNING, OA_RT_PORTALSURFACE,
+	OA_RT_MAX
+} oaRefEntityType_t;
+
+typedef struct {
+	oaRefEntityType_t	reType;
+	int			renderfx;
+	qhandle_t	hModel;
+	vec3_t		lightingOrigin;
+	float		shadowPlane;
+	vec3_t		axis[3];
+	qboolean	nonNormalizedAxes;
+	float		origin[3];
+	int			frame;
+	float		oldorigin[3];
+	int			oldframe;
+	float		backlerp;
+	int			skinNum;
+	qhandle_t	customSkin;
+	qhandle_t	customShader;
+	byte		shaderRGBA[4];
+	float		shaderTexCoord[2];
+	float		shaderTime;
+	float		radius;
+	float		rotation;
+	vec3_t		eyepos[2];
+	vec3_t		eyelook;
+	int			glow;
+	int			glowcol;
+} oaRefEntity_t;
+
+typedef struct {
+	int			x, y, width, height;
+	float		fov_x, fov_y;
+	vec3_t		vieworg;
+	vec3_t		viewaxis[3];
+	int			time;
+	int			rdflags;
+	byte		areamask[MAX_MAP_AREA_BYTES];
+	char		text[8][32];
+} oaRefdef_t;
+
+#define OA_MAX_SCENE_ENTS	256
+
+static int oaSnapNum = 0;
+static int oaSceneCount = 0;
+static int oaSceneLights = 0;
+static int oaScenePolys = 0;
+static int oaDraws = 0;
+static int oaSceneEntTotal = 0;		/* running entity-add count (work metric) */
+static double oaSceneWork = 0.0;	/* keeps front-end emulation from optimizing away */
+
+static oaRefEntity_t oaScene[OA_MAX_SCENE_ENTS];
+
+static void oaVMRead( void *dst, intptr_t idx, int n ) {
+	if ( !idx || !benchVM || n <= 0 ) return;
+	const char *base = (const char *)benchVM->dataBase;
+	int off = (int)idx & benchVM->dataMask;
+	char *d = (char *)dst;
+	for ( int i = 0; i < n; i++ ) d[i] = base[ ( off + i ) & benchVM->dataMask ];
+}
+
+/* masked VM string read is already oaVMStr */
+static void oaBuildSnapshot( int k, oaSnapshot_t *snap ) {
+	memset( snap, 0, sizeof( *snap ) );
+	snap->snapFlags = 0;				/* active, not delayed */
+	snap->ping = 10;
+	snap->serverTime = k * 50 + 1000;
+	snap->numServerCommands = 0;
+	snap->serverCommandSequence = 0;
+	playerState_t *ps = &snap->ps;
+	ps->commandTime = snap->serverTime;
+	ps->pm_type = 0;					/* PM_NORMAL */
+	ps->bobCycle = ( k * 11 ) & 255;
+	ps->clientNum = 0;
+	ps->weapon = 2;						/* machinegun */
+	ps->stats[0] = 100;					/* STAT_HEALTH */
+	ps->stats[2] = 100;					/* STAT_ARMOR */
+	ps->stats[12] = 100;				/* STAT_MAX_HEALTH */
+	ps->groundEntityNum = 1022;			/* ENTITYNUM_WORLD */
+	ps->origin[0] = 0.0f; ps->origin[1] = 300.0f; ps->origin[2] = 16.0f;
+	ps->viewangles[0] = 0.0f; ps->viewangles[1] = ( k * 5.7f ); ps->viewangles[2] = 0.0f;
+	ps->speed = 200;
+
+	snap->numEntities = OA_SNAP_ENTITIES;
+	for ( int i = 0; i < OA_SNAP_ENTITIES; i++ ) {
+		entityState_t *es = &snap->entities[i];
+		es->number = i;
+		es->eType = ( i == 0 ) ? 1 : 2;	/* ET_PLAYER / ET_ITEM */
+		es->clientNum = i % 16;
+		es->modelindex = i;				/* items: bg_itemlist[1..] */
+		es->solid = 2;
+		es->pos.trType = 0;				/* TR_STATIONARY */
+		es->pos.trBase[0] = ( i * 40.0f ) - 300.0f;
+		es->pos.trBase[1] = ( ( i * 73 ) % 600 ) - 300.0f;
+		es->pos.trBase[2] = 16.0f;
+		if ( i > 0 ) es->pos.trBase[2] += (float)( ( k * 7 + i * 13 ) % 40 );
+		es->apos.trType = 0;
+	}
+}
 
 /* ---- fake cvar storage --------------------------------------------------- */
 
@@ -294,16 +429,57 @@ intptr_t oaSyscall( intptr_t *parms ) {
 		oaVMWrite( parms[1], t, sizeof( t ) );
 		return 0;
 	}
-	case 27: case 87: return 0;				/* MARKFRAGMENTS / ADDPOLYS */
+	case 27: return 0;							/* MARKFRAGMENTS */
 	case 28: case 29: case 30: case 31: case 32:
 	case 33: case 34: case 35: case 69: case 80: case 81: return 0;	/* S_* */
 	case 36: return 0;						/* R_LOADWORLDMAP */
 	case 37: case 38: case 39: case 57: case 59: {
 		return ++rHandles;
 	}
-	case 40: return 0;						/* R_CLEARSCENE */
-	case 41: case 42: case 43: case 85: return 0;					/* add ents/lights */
-	case 44: return 0;						/* R_RENDERSCENE */
+	case 40: oaSceneCount = 0; oaSceneLights = 0; oaScenePolys = 0; return 0;	/* R_CLEARSCENE */
+	case 41: {								/* R_ADDREFENTITYTOSCENE: copy into the scene list */
+		oaRefEntity_t re;
+		oaVMRead( &re, parms[1], sizeof( re ) );
+		if ( re.reType < 0 || re.reType >= OA_RT_MAX ) return 0;
+		if ( oaSceneCount < OA_MAX_SCENE_ENTS ) {
+			oaScene[oaSceneCount++] = re;
+			oaSceneEntTotal++;
+		}
+		return 0;
+	}
+	case 42: {								/* R_ADDPOLYTOSCENE: read verts, count */
+		int numVerts = (int)parms[2];
+		if ( numVerts > 0 && numVerts <= 40 && parms[3] ) {
+			oaPolyVert_t verts[40];
+			oaVMRead( verts, parms[3], numVerts * sizeof( oaPolyVert_t ) );
+			for ( int v = 0; v < numVerts; v++ ) if ( isfinite( verts[v].xyz[0] ) ) oaSceneWork += verts[v].xyz[0] * 0.001;
+			oaScenePolys++;
+		}
+		return 0;
+	}
+	case 43: case 85: oaSceneLights++; return 0;	/* lights */
+	case 44: {								/* R_RENDERSCENE: front-end emulation */
+		oaRefdef_t rd;
+		oaVMRead( &rd, parms[1], sizeof( rd ) );
+		float depth[OA_MAX_SCENE_ENTS];
+		for ( int i = 0; i < oaSceneCount; i++ ) {
+			float dx = oaScene[i].origin[0] - rd.vieworg[0];
+			float dy = oaScene[i].origin[1] - rd.vieworg[1];
+			float dz = oaScene[i].origin[2] - rd.vieworg[2];
+			depth[i] = dx * dx + dy * dy + dz * dz;
+			if ( isfinite( depth[i] ) ) oaSceneWork += depth[i] * 1e-9;
+		}
+		int idx[OA_MAX_SCENE_ENTS];
+		for ( int i = 0; i < oaSceneCount; i++ ) idx[i] = i;
+		for ( int i = 1; i < oaSceneCount; i++ ) {	/* depth sort, back to front */
+			int v = idx[i], j = i - 1;
+			while ( j >= 0 && depth[idx[j]] < depth[v] ) { idx[j + 1] = idx[j]; j--; }
+			idx[j + 1] = v;
+		}
+		oaDraws += oaSceneCount;
+		oaSceneCount = 0;
+		return 0;
+	}
 	case 45: case 46: return 0;				/* SetColor / DrawStretchPic */
 	case 47:								/* R_MODELBOUNDS: zeros */
 		static const int zeros3[3];
@@ -324,25 +500,43 @@ intptr_t oaSyscall( intptr_t *parms ) {
 	case 50: {								/* GETGAMESTATE: built configstrings */
 		oaGameState_t gs;
 		memset( &gs, 0, sizeof( gs ) );
-		for ( int i = 0; i < 64 && i < MAX_CONFIGSTRINGS; i++ ) {
-			if ( !oaConfigStrings[i] || !oaConfigStrings[i][0] ) continue;
-			int n = strlen( oaConfigStrings[i] );
+		for ( int i = 0; i < MAX_CONFIGSTRINGS; i++ ) {
+			const char *str = NULL;
+			if ( i < 64 ) str = oaConfigStrings[i];
+			else if ( i >= 544 && i < 544 + 16 ) {	/* CS_PLAYERS */
+				static char playerStr[16][160];
+				int c = i - 544;
+				if ( !playerStr[c][0] ) {
+					snprintf( playerStr[c], sizeof( playerStr[0] ),
+							  "\\name\\Player%d\\model\\sarge\\headmodel\\sarge\\team\\default\\skin\\default", c );
+				}
+				str = playerStr[c];
+			}
+			if ( !str || !str[0] ) continue;
+			int n = strlen( str );
 			if ( n > 1023 ) n = 1023;
 			gs.stringOffsets[i] = gs.dataCount;
-			memcpy( gs.stringData + gs.dataCount, oaConfigStrings[i], n + 1 );
+			memcpy( gs.stringData + gs.dataCount, str, n + 1 );
 			gs.dataCount += n + 1;
 		}
 		oaVMWrite( parms[1], &gs, sizeof( gs ) );
 		return 0;
 	}
-	case 51: {								/* GETCURRENTSNAPSHOTNUMBER: zero */
-		int *n = (int *)OAVMA( parms[1] );
-		int *t = (int *)OAVMA( parms[2] );
-		if ( n ) *n = 0;
-		if ( t ) *t = 0;
+	case 51: {								/* GETCURRENTSNAPSHOTNUMBER: advances 1/frame */
+		oaSnapNum++;
+		oaVMWrite( parms[1], &oaSnapNum, 4 );
+		int t = oaSnapNum * 50 + 1000;
+		oaVMWrite( parms[2], &t, 4 );
 		return 0;
 	}
-	case 52: return 0;						/* GETSNAPSHOT: none */
+	case 52: {								/* GETSNAPSHOT: build snapshot k */
+		oaSnapshot_t snap;
+		int k = (int)parms[1];
+		if ( k < 1 || k > oaSnapNum ) return 0;
+		oaBuildSnapshot( k, &snap );
+		oaVMWrite( parms[2], &snap, sizeof( snap ) );
+		return 1;
+	}
 	case 53: return 0;						/* GETSERVERCOMMAND: none */
 	case 54: return 0;						/* GETCURRENTCMDNUMBER */
 	case 55: return 0;						/* GETUSERCMD: none */
@@ -390,7 +584,8 @@ void oaSyscallReport( void ) {
 	long long total = 0, unknown = 0;
 	for ( int i = 0; i < MAXTRAP; i++ ) total += oaTrapCount[i];
 	for ( int i = 0; i < MAXTRAP; i++ ) unknown += oaUnknownCount[i];
-	fprintf( stderr, "oa-syscalls: total=%lld unknown=%lld\n", total, unknown );
+	fprintf( stderr, "oa-syscalls: total=%lld unknown=%lld sceneEnts=%d lights=%d polys=%d draws=%d work=%.1f\n",
+			 total, unknown, oaSceneEntTotal, oaSceneLights, oaScenePolys, oaDraws, oaSceneWork );
 	for ( int i = 0; i < MAXTRAP; i++ ) {
 		if ( oaTrapCount[i] > 0 ) fprintf( stderr, "  trap %d: %lld\n", i, oaTrapCount[i] );
 	}

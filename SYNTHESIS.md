@@ -132,7 +132,12 @@ never-replayable, order-independent vs implementation-defined.**
   actual frame loop: 60 CG_DRAW_ACTIVE_FRAME at identical 79,416 syscalls —
   3.3M vs 0.6-0.9M cycles/frame ≈ 4.3× (real frames make 1,289
   mode-independent syscall traps/frame, diluting the ratio)
-  `targets/qvm/findings-openarena-frames.md`.
+  `targets/qvm/findings-openarena-frames.md`. A full trap layer
+  (loaded scene: 16-entity snapshots, ~28 refEntities/frame, engine-style
+  cull+sort) measures the honest frame ratio: ~2.0–2.7×, plus a
+  correctness finding — interpreter and JIT are not bit-equivalent
+  (x87 vs SSE float rounding, 0.3% syscall drift in sin alone)
+  `targets/qvm/findings-openarena-full.md`.
 - **Scale honesty:** at TH04's own scale, V8 makes most of this free — the
   mechanisms matter when populations, traffic, or correctness requirements grow
   past the defaults' comfort zone (exactly where modern systems live).

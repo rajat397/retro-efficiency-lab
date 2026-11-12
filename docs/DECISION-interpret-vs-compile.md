@@ -136,3 +136,21 @@ identical syscall counts (79,416, 0 unknown, both modes):
   compute-heavy loops widen it. The decision rule now has the shape:
   *the closer the workload lives to the C boundary, the less the dispatch
   tax matters — and the fewer reasons a JIT can pay for itself.*
+
+## MEASURED upgrade (2026-11-13): the full picture — ratio bounded by the native:dispatch work ratio
+
+A loaded scene (16-entity snapshots, ~28 refEntities/frame, real
+`RenderScene` cull+sort) measures **≈2.0–2.7×** per frame, down from 4.3×:
+the earlier empty-world layer made cgame retry missing snapshots every
+frame (inflating VM dispatch), and the loaded scene pays more
+mode-independent native work (entity copies, depth sort). The interpreter/
+JIT ratio of a real frame is bounded by the *native:dispatch work ratio* —
+as native work approaches dispatch work, the ratio approaches 1.
+
+**And a correctness finding:** the two execution modes are not
+bit-equivalent — syscall totals drift by 0.3% (all in `sin`, 112 calls)
+because `vm_x86.c` emits x87 float ops (80-bit intermediates) while the
+interpreter's C float path is SSE (32-bit). id Tech 3 ships both modes
+anyway; deterministic lockstep replay against the JIT is unsound at FP
+granularity. When picking "interpret or compile," FP-rounding equivalence
+is a criterion nobody measures — here it is measured.
