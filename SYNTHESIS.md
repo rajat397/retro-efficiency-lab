@@ -113,8 +113,15 @@ never-replayable, order-independent vs implementation-defined.**
 - **Same-machine timing numbers are noisy** (±50%); the load-bearing transfer
   metrics are the deterministic ones (allocation counts, hash equality, backlog
   bounds).
-- **Not yet proven:** LUT-precision payoff (M-9), procedural-as-compression
-  (M-6), event-VM extensibility economics (M-1). Cataloged ≠ proven.
+- **Not yet proven:** ~~LUT-precision payoff (M-9), procedural-as-compression
+  (M-6), event-VM extensibility economics (M-1). Cataloged ≠ proven.~~
+  **Closed 2026-11-13** — all three were proven when their transfer tests landed;
+  this line had gone stale (M-9: 11.3–11.9× throughput + zero-ulp-surface
+  determinism; M-6: 2521×/470× compression + regen-hash identical; M-1: 4 data
+  rows / 0 interpreter lines at a 20.0× tax + replay identical). All 11 transfer
+  benches re-run 2026-11-13, exit 0, numbers reproduced. Lesson recorded in
+  `docs/PITCH-STRESS-TEST.md`: honesty lines are ledgers — stale honesty is the
+  diligence failure mode.
 - **Post-closeout addendum (2026-11-13):** M-1's SQLite leg is now
   `measured` end-to-end — VDBE dispatch floor 45 hw cycles/op, interpretation
   ≈3% of a point query, and WAL-vs-DELETE journaling quantified at opcode
