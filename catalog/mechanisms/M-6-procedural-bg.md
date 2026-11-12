@@ -35,5 +35,8 @@ Elite twist-register is the pattern's minimum form: content-addressable-by-seed.
 quantization artifacts (Elite's "horace" names); deterministic but sequence-
 locked — regenerating item N requires items 0..N-1 (or checkpointed seeds).
 
-**Status.** **cataloged** — two engine-family witnesses (TH04 painter 1998;
-Elite generator 1984) under the generalized mechanism: content from compact state.
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-6-procedural-state/`:
+48 bytes of seeds vs 121 KB of content (2521× raw, 470× vs gzip), 10.9 ms
+generation for 2048 planets, regen hash IDENTICAL; modern framing: 10k test
+fixtures from a 4-byte seed. Costs recorded: sequence-locked regen +
+expressiveness bounds.

@@ -33,8 +33,9 @@ interpreter, put behavior in payload. Plugins and patches become data, not code.
 hunt required writing a full event-format decoder); debugging without the original
 editor is painful; the VM becomes the performance ceiling.
 
-**Status.** **cataloged** — two real-engine witnesses + one calibration:
-Another World (1991, interpreter ≈700 lines of C++ vs a game shipped entirely as
-bytecode data), MarioXP (2003, coarse-grained event VM), TH04 (1998, timed
-specialization = M-3). The budget claim is strongest in Another World: 640 KB-era
-hardware, all behavior in data, interpreter fixed at ship.
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-1-event-vm/`:
+new behaviors = data rows with 0 interpreter changes; the interpreter tax
+measured honestly at ~10–22× per op (the card's costs field, quantified);
+replay determinism IDENTICAL. Bench bugs caught and fixed per lab rules:
+unbounded entity growth (→ bounded pool, TH04 law) and missing per-frame
+instruction budgets (→ TH04/AW's execution discipline).

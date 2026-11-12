@@ -17,7 +17,7 @@ proofs.
 | [M-3](M-3-timed-vm.md) | Timed bytecode VM with self-mutating dispatch | data-as-program | **proven** | TH04 + TH05 + transfer test |
 | [M-4](M-4-replay-determinism.md) | Replay determinism via fixed-size input recordings | determinism | **proven** | TH04 + Doom + transfer test |
 | [M-5](M-5-measured-slowdown.md) | Measured adaptive frame budget (slow sim, never drop) | adaptive | **proven** | TH04 + transfer test |
-| [M-6](M-6-procedural-bg.md) | Procedural generation from compact seeds/state | procedural | **cataloged** | TH04 + Elite |
+| [M-6](M-6-procedural-bg.md) | Procedural generation from compact seeds/state | procedural | **proven** | TH04 + Elite + transfer test |
 | [M-7](M-7-fnptr-composition.md) | Frame pipeline composed from hot-swapped function-pointer slots | data-as-program | **cataloged** | TH04 + Doom |
 
 | [M-8](M-8-zone-allocator.md) | Tagged zone allocator — free-by-tag pooled memory | zero-alloc | **cataloged** | Doom + Duke3D |
