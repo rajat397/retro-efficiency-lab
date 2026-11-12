@@ -1,0 +1,9 @@
+{
+  "repo": "/mnt/data/projects/retro-efficiency-lab",
+  "base": "main",
+  "concurrency": 2,
+  "worktreeDir": ".tide",
+  "agentCommand": "opencode run \"$(cat {taskFile})\"",
+  "gateCommand": "node scripts/tide-gate.mjs",
+  "autoMerge": false
+}
