@@ -51,7 +51,14 @@ These are the claims with claim-like force. Evidence chains: `catalog/mechanisms
    work budgets (8 ms vs 49.8 s lag), deterministic replay (byte-identical vs
    never-replayable), deferred dispatch, zone allocation, LUT trig, index-linked
    lists, procedural-from-seeds. Measured on a 2026 stack in transfer tests.
-6. **Lifecycle (not interpretation) dominates statement cost.** SQLite point query:
+6. **Budget disciplines are resource-agnostic; the port is re-deriving the unit.**
+   TH04's pool/budget/step-down disciplines port from CPU/frame/slots to
+   tokens/rate-limits (M-12, transfer-tested): 100% completion vs 34 starved,
+   runaway waste 20% of spend → 0, 900k 429 backoffs → 0, at identical
+   quota-bound p99 lag. The port's real work is the four break-points (leased
+   quotas, money-vs-time quality ladders, determinism asymmetry, silent
+   truncation) — recorded in `catalog/mechanisms/M-12-budget-portability.md`.
+7. **Lifecycle (not interpretation) dominates statement cost.** SQLite point query:
    77% of cycles are `Transaction`+`Halt` lifecycle, ~3% interpretation; WAL mode's
    win is a −66% `Transaction` opcode delta, and the 45-cycle floor is unchanged.
    Journaling, not interpretation, is the cost knob.

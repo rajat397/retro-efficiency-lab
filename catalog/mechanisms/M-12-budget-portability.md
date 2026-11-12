@@ -55,6 +55,27 @@ leased quotas add sync complexity; admission control rejects work a naive system
 would (eventually) complete; budget tuning is a new constant set that can be
 wrong (the TH04 constants were tuned over years).
 
-**Status.** `seed` — one-side-witnessed (TH04/CPU half measured; agent-fleet half
-pending the transfer test above). Rung: this is the first card seeded *from*
-the lab's own synthesis rather than from a binary — the loop feeding itself.
+**Status.** **proven (at the orchestration-model level)** — transfer test
+`catalog/transfer-tests/M-12-budget-portability/bench.mjs` (deterministic
+discrete-event sim: 200 tasks, 20 runaway, provider 8-conc / 15,000→7,500 TPM
+halving at minute 1, virtual-clock, no LLM calls). Measured:
+
+| metric | naive | budgeted |
+|---|---|---|
+| real tasks completed | 146/180 (34 starved at horizon) | **180/180** |
+| runaway agents | never stop | 20/20 budget-killed at turn 12 |
+| tokens burned past budget | 633,374 (**20% of spend = $1.27**) | 0 |
+| 429 backoffs | 900,937 | **0** (leased bucket) |
+| p99 lag | 26,223 s | 25,860 s (quota-bound both) |
+
+Oracle: the orchestration trace (1,997 decisions) hashes identical across
+repeated runs — the budget/scheduling layer is replayable.
+
+**Scope honesty.** Proven: the *port* — pool, per-task budget, leased quota, and
+the one-time step-down on an externally-halved quota (break-point 1) all work
+against token/rate-limit resources with metered, deterministic metrics. Not yet
+exercised: break-points 2–4 (model-tier quality ladders, determinism against
+real LLM output, context-window eviction) — the sim's "completions" are a
+cost/latency model, so only the orchestration layer's claims are measured.
+First card seeded *from* the lab's own synthesis rather than from a binary —
+the loop feeding itself.
