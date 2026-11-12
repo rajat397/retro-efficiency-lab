@@ -78,9 +78,7 @@ independent codebases.
 
 | Status | Count | Cards |
 |---|---|---|
-| proven | **4** | M-2, M-3, M-4, M-5 |
-| cataloged | **7** | M-1, M-6, M-7, M-8, M-9 (M-4 dual-listed) |
-| single-witness | **0** | — |
+| proven | **10** | ALL — M-1..M-10 (every card transfer-tested) |
 
 10 cards, 5 engine families + RCT2 (Target 5 open), 4 runnable transfer tests.
 Full catalog sweep complete: every mechanism ≥ cataloged.
