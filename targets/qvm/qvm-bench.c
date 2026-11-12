@@ -216,16 +216,31 @@ int main( int argc, char **argv ) {
 	double opsPerIteration = 0.0;
 
 #ifdef QVM_BENCH_COMPILED
-	vm_t *vm = VM_Create( module, syscalls, VMI_COMPILED );	/* vm_x86 JIT */
+	vm_t *vm;
+	{
+		unsigned long long t0 = rdtsc();
+		vm = VM_Create( module, syscalls, VMI_COMPILED );	/* vm_x86 JIT */
+		unsigned long long t1 = rdtsc();
+		fprintf( stderr, "VM_Create (JIT compile): %llu cycles\n", t1 - t0 );
+	}
 #else
-	vm_t *vm = VM_Create( module, syscalls, VMI_BYTECODE );	/* interpreter */
+	vm_t *vm;
+	{
+		unsigned long long t0 = rdtsc();
+		vm = VM_Create( module, syscalls, VMI_BYTECODE );	/* interpreter */
+		unsigned long long t1 = rdtsc();
+		fprintf( stderr, "VM_Create (interpreter prep): %llu cycles\n", t1 - t0 );
+	}
 #endif
 	if ( !vm ) { fprintf( stderr, "VM_Create(%s) failed\n", module ); return 2; }
 
 #ifdef HAVE_VM_COMPILED
-	fprintf( stderr, "mode: compiled (vm_x86 JIT) compiled=%d\n", vm->compiled );
+	fprintf( stderr, "mode=%s compiled=%d instrCount=%d codeLength=%d\n",
+			 vm->compiled ? "JIT" : "interpreter", vm->compiled,
+			 vm->instructionCount, vm->codeLength );
 #else
-	fprintf( stderr, "mode: interpreted, compiled=%d\n", vm->compiled );
+	fprintf( stderr, "mode=interpreter compiled=%d instrCount=%d codeLength=%d\n",
+			 vm->compiled, vm->instructionCount, vm->codeLength );
 #endif
 
 	/* warmup */

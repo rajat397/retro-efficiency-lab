@@ -102,3 +102,23 @@ The rule gains a second leg: *dispatch register discipline* sets the floor
 (QVM 7.2 vs VDBE 45 cycles/op), and hot compute code wants the JIT regardless
 of how good the interpreter is, while boundary crossings cost what the C-call
 costs.
+
+## MEASURED upgrade (2026-11-13): real gamecode — OpenArena through the real engine
+
+Loaded genuine OpenArena B52 bytecode (`cgame` 125,622 instructions) into the
+unmodified interpreter and JIT (`targets/qvm/findings-openarena.md`):
+
+- **Load cost:** JIT compile is 2.4× the interpreter's prep cost, but the
+  interpreter's word-expanded image (4×codeLength = 1.5 MB) is *larger* than
+  the JIT'd machine code (1.1 MB) — the fast interpreter pays in memory.
+- **Same `CG_INIT`, identical 74,184 syscalls: 5.76M cycles interpreted vs
+  0.56M JIT'd — 10.3×** on real game code, third engine confirming the
+  10–22× interpreter-tax band.
+- Real game opcode mix: 80% of dispatches are stack traffic
+  (LOCAL/CONST/LOAD4/STORE4/ARG/POP ≈ 80% combined) — the QVM is a pure
+  stack machine in practice.
+
+Load-time asymmetry now measured: interpretation wins startup (2.4× cheaper
+prep), JIT wins steady-state (10×) and even the memory footprint (1.1 vs
+1.5 MB). "Interpret cold, compile hot" now has numbers for both sides of
+the trade.
