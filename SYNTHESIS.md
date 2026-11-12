@@ -152,3 +152,7 @@ for every claim above.
 *Repro artifacts: `catalog/transfer-tests/*/` (each runs standalone);
 binary evidence: `/mnt/data/rea/` snapshots; repo:
 github.com/rajat397/retro-efficiency-lab.*
+
+
+The distilled cross-target learnings (skills, architectural findings, per-target
+audit, honest usefulness verdicts) live in **`docs/LEARNINGS.md`**.

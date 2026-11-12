@@ -71,3 +71,9 @@ immediately:
    informed-reconstruction` until re-anchored against the original binary
    or measured directly; the SQLite VDBE findings are `traced` until the
    profiling pass (in progress) upgrades them to `measured`.
+
+## Where extracted learnings live
+
+Per-target findings: `targets/*/findings*.md`. The cross-target distillation
+(skills, architectural findings, per-target usefulness audit) is maintained in
+**`docs/LEARNINGS.md`** — update it at every target closeout, additively.
