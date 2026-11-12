@@ -5,6 +5,13 @@ event program stored in a data file, interpreted by a small fixed runtime — ga
 specific code is ~zero; behavior ships as payload.
 
 **Witnesses.**
+- **SQLite** (2000–, official source): the VDBE — `sqlite3VdbeExec`
+  (`src/vdbe.c:903`, ~200 opcode arms) interprets compiled query programs;
+  real EXPLAIN dumps show 15–49-op programs with Gosub/Return subroutines
+  and Rewind/Next loops (`targets/sqlite/findings-VDBE.md`). The hybrid
+  the decision doc prescribes, at planetary scale: queries are data,
+  hot loops are compiled C.
+
 1. MarioXP (Click & Create 1.x, 2003): 72 frames / 13,450 events / zero leftover
    bytes in `MarioXP_0121.cca`; runtime shell 448 KB + `CNCS32.DLL` (168 KB).
 2. **Another World** (Eric Chahi, 1991; official 15th-anniversary VM source,
