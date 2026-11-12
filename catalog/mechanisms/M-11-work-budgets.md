@@ -30,6 +30,11 @@ consumed, not errors.
 RCT2 re-runs pathfinding per peep per tick so a failed search self-heals
 next frame; a single-shot consumer would need a different story.
 
-**Status.** **cataloged** — two engine-family witnesses (Build 1996, RCT2
-2002). Transfer test candidate: unbounded vs budgeted search under
-wall-clock pressure — the quality/time Pareto curve is the proof target.
+**Status.** **proven** — transfer test `catalog/transfer-tests/M-11-work-budgets/`:
+sized above typical need the budget is FREE (goal-biased budgeted DFS beat
+the BFS control on worst-tick latency 47.9 vs 105.4ms at 100% arrivals,
++6.1% overshoot); the cap bounds pathological scans 6.6× (1647→250
+tiles/agent, graceful failure); undersized budgets bind where topology
+demands search (deep goals: 0% arrivals at b=33). Test-bug archaeology:
+inverted greedy, generation-stamp truthiness, mis-sizing, allocation
+confound — all caught and fixed, documented in the README.
