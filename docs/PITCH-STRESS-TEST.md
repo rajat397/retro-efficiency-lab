@@ -52,9 +52,9 @@ Do not soften the pitch. Raise the artifacts. The failing points become work ite
 | failing point | fix | status |
 |---|---|---|
 | 3 unproven payoff claims | **CLOSED 2026-11-13:** all three were already proven by their transfer benches; SYNTHESIS's honest-limits line was stale and has been corrected (M-9 11.3–11.9×, M-6 2521×/470×, M-1 20.0×/4-data-rows). All 11 benches re-run exit 0. New lesson: honesty lines are ledgers — audit them before quoting them. | closed |
-| RCT2 `restated` | re-anchor T5A–T5D against the original binary; `measured` or honest regrade | open → this session |
-| "moat"/external validation | reword to current truth + define the external-validation milestone concretely (what evidence would count) | open |
-| "repeatable by any engineer" | make repeatability testable: a cold-start runbook a second engineer can execute without us; the first outside run becomes the proof | open |
+| RCT2 `restated` | **BLOCKED on input:** no original `rct2.exe` exists on this machine (commercial — operator supplies). Written `targets/rct/RE-ANCHOR.md`: per-finding evidence requirements + bounded 4-step REA method + honest-regrade rule. The blocker is now a defined dependency, not an intention. | blocked → awaiting binary |
+| "moat"/external validation | **DEFINED:** the milestone is one completed external card (an engineer outside the lab producing a card + bench that a reviewer cannot distinguish from in-house). Until then the pitch says "compounding demonstrated internally" verbatim. | criterion defined |
+| "repeatable by any engineer" | **MADE TESTABLE:** `docs/RUNBOOK.md` — 5 gated steps, one-day budget, definition of done, first-run protocol. Zero runs completed; the claim stays labeled as belief until run #1 lands. | protocol written, datum pending |
 
 Pitch rule going forward: every sentence in a pitch must trace to a repo file, and
 anything not yet measured is named as such in the same breath — which is only
