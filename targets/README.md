@@ -74,6 +74,19 @@ Chahi's AW VM (1991), Borland/Clickteam PC-98 era (TH04/TH05, MarioXP). M-3's se
 mechanism appears in BOTH TH04 (1998) and Another World (1991) — 7 years apart,
 independent codebases.
 
+## Target slate
+
+| # | Target | Status |
+|---|---|---|
+| 0 | MarioXP (pipeline calibration) | complete |
+| 1 | Touhou TH04/TH05 | complete |
+| 2 | Doom (id Tech 1) | complete |
+| 3 | Duke3D/Build + Another World | complete |
+| 4 | Elite (bonus witness) | complete |
+| 5 | RCT2 peep economy | complete |
+| 6 | **SQLite** | opened |
+| 7 | Quake III QVM | proposed |
+
 ## Lab scoreboard (2026-11-12, update 5)
 
 | Status | Count | Cards |
