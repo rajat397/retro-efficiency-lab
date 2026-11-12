@@ -78,7 +78,8 @@ independent codebases.
 
 | Status | Count | Cards |
 |---|---|---|
-| proven | **10** | ALL — M-1..M-10 (every card transfer-tested) |
+| proven | **10** | M-1..M-10 (every card transfer-tested)
+| cataloged | **1** | M-11 (work budgets; transfer test pending) |
 
-10 cards, 5 engine families + RCT2 (Target 5 open), 4 runnable transfer tests.
+11 cards, 5 engine families + RCT2 (Target 5 findings stage done), 4 runnable transfer tests.
 Full catalog sweep complete: every mechanism ≥ cataloged.

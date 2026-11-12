@@ -5,7 +5,16 @@ its dominant workload (live bullets) each frame and *steps the simulation rate d
 through discrete levels when a difficulty-scaled threshold is crossed — gameplay
 slows, nothing is skipped, determinism is preserved.
 
-**Witnesses.** TH04 `MAIN.EXE` (inside the bullet update loop); ReC98
+**Witnesses.**
+- **RCT2** (2002, informed reconstruction): the guest-generation law is a
+  measured, modulated throttle against a soft ceiling — per-tick draw vs
+  `guestGenerationProbability` = 50 + clamp(rating−200, 0, 650), divided by
+  4 past `suggestedGuestMaximum` (and again at 52,000 guests, and for
+  overpriced entrance), recomputed on a slow 512-tick loop
+  (`Park.cpp:163-213`, `:218`, `:334-345`); spawn vetoed below 400 free
+  entity slots (`Guest.cpp:7210+`). The TH04 slowdown law's sibling:
+  rate as a control variable, never free-running growth.
+ TH04 `MAIN.EXE` (inside the bullet update loop); ReC98
 `th04/main/slowdown.hpp` + `playperf.hpp` name the same system (`SLOWDOWN_BULLET_
 THRESHOLD = 24`).
 

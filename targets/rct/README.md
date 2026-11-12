@@ -52,6 +52,16 @@ exactly two lists at once via `insertsprite(sectnum, statnum)`.
   thought slots per peep (the peep AI itself is a fixed-capacity buffer).
 - `PeepSpawns[kMaxPeepSpawns = 256]` — spawn points are a fixed pool too.
 
+## Probe outcomes (2026-11-12, subagent-dispatched, evidence-gated)
+
+- `findings-T5A.md` — guest-generation law: two-timescale feedback
+  (512-tick recompute), throttled draws vs soft ceiling, bounded spawn
+  pools. M-5 third-witness face recorded.
+- `findings-T5B.md` — pathfinding: bounded DFS (15k tiles / 200 steps /
+  5-8 junction depth), inline per-peep path memory. M-10 verdict honest
+  "none found"; spawned NEW card M-11 (work budgets, with Duke3D's
+  clipmoveboxtracenum=3 as second witness).
+
 ## Next probes
 
 1. Guest generation law: find the spawn-rate/park-rating control loop in
