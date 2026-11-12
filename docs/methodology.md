@@ -51,3 +51,23 @@ Families: `determinism` · `zero-alloc` · `data-as-program` · `procedural` ·
   and multi-witness rule are the counterweights.
 - "Old software was also bad" is assumed true until a mechanism card says otherwise
   with evidence.
+
+## Depth bar (added 2026-11-12, after the shallow-probe correction)
+
+Fast findings that restated textbook facts passed the evidence gate because
+the gate checked FORM (bytes, anchors, no TODOs). Prevention, effective
+immediately:
+
+1. **Probe contracts before dispatch** — `docs/templates/probe-contract.md`.
+   A probe with no contract isn't dispatched.
+2. **Depth-class labels** — every findings file and card declares
+   `measured` / `traced` / `restated`. Synthesis and cards cite only
+   `measured`/`traced` for load-bearing claims.
+3. **Verifier ≠ author** — for `measured` findings, a second agent re-runs
+   the repro command and checks that anchors SUPPORT the claims.
+4. **Litmus, extended** — count measurements produced vs claims restated.
+   Zero measurements = theater.
+5. **Re-grading**: RCT2 findings (T5A–T5D) are `restated +
+   informed-reconstruction` until re-anchored against the original binary
+   or measured directly; the SQLite VDBE findings are `traced` until the
+   profiling pass (in progress) upgrades them to `measured`.

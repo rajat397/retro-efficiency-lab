@@ -1,3 +1,5 @@
+> **Depth class**: traced (regraded 2026-11-12 per methodology depth bar — upgrade path in file)
+
 # Findings — SQLite VDBE: queries-as-data in production (T6.1, 2026-11-12)
 
 Artifact: `/tmp/opencode/lab-catalog.db` (created for this probe; 3 tables,

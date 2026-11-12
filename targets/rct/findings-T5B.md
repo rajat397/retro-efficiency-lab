@@ -1,3 +1,5 @@
+> **Depth class**: restated + informed-reconstruction (regraded 2026-11-12 per methodology depth bar — upgrade path in file)
+
 # T5B Findings: RCT2 Peep Pathfinding in OpenRCT2
 
 Target: OpenRCT2 (GPL reimplementation of RollerCoaster Tycoon 2), source tree

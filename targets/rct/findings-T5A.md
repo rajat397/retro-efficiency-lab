@@ -1,3 +1,5 @@
+> **Depth class**: restated + informed-reconstruction (regraded 2026-11-12 per methodology depth bar — upgrade path in file)
+
 # RCT2 Guest-Generation Law — OpenRCT2 Probe (T5A)
 
 Authority class: informed reconstruction (OpenRCT2 preserves original RCT2 constants,

@@ -1,3 +1,5 @@
+> **Depth class**: restated + informed-reconstruction (regraded 2026-11-12 per methodology depth bar — upgrade path in file)
+
 # RCT2 Economy Probe — Ride Value & Guest Spend (OpenRCT2)
 
 Authority: informed reconstruction of the original RCT2 (OpenRCT2 keeps original constants,
