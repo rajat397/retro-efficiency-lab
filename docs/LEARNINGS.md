@@ -93,6 +93,30 @@ These are the claims with claim-like force. Evidence chains: `catalog/mechanisms
   are explicit, and corrections land in the same chain (DECISION doc carries three
   dated upgrades, each superseding the last).
 
+## 4b. Rules added from external review (2026-11-13)
+
+Full log with per-point dispositions: `docs/CRITICISM-LOG-2026-11-13.md`.
+
+- Bench headers must state baseline competence and metric semantics — M-5's
+  "99.6s" headline was a run-length artifact (naive lag grows linearly at
+  0.996 s-lag/s; the TH04 law is horizon-invariant ~17ms). The finding is the
+  contrast: growth rate vs bounded steady state.
+- Determinism claims name their matrix: M-4/M-9 evidence is single-host under
+  machine-load jitter variation; the cross-platform matrix is untested and
+  named as such.
+- The determinism SKU is engine-controlled systems (games, backtesting, sims).
+  LLM batch nondeterminism is a different mechanism (batch-invariant kernels,
+  open source) — our x87/SSE finding is interpreter-vs-JIT within one engine,
+  measured by syscall drift. For LLM traces, the lab's replayable object is the
+  orchestration trace (budget/scheduling decisions).
+- Product wedge: counterfactual capacity proof, measurement-first (M-12 bench
+  now prints required-quota/finish-time/lever trade-offs; first product is a
+  simulator-plus-profiler against customer traces, runtime later).
+- "1998's mistakes" framing retired: retry storms are established distributed-
+  systems failures; the honest line is that the agent layer rebuilt them without
+  the operational discipline — and the lab measures what that discipline is worth.
+
+
 ## 5. Open questions carried forward
 
 - RCT2 re-anchor against the original binary (deferred twice; the one standing
