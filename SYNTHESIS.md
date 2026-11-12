@@ -115,6 +115,16 @@ never-replayable, order-independent vs implementation-defined.**
   bounds).
 - **Not yet proven:** LUT-precision payoff (M-9), procedural-as-compression
   (M-6), event-VM extensibility economics (M-1). Cataloged ≠ proven.
+- **Post-closeout addendum (2026-11-13):** M-1's SQLite leg is now
+  `measured` end-to-end — VDBE dispatch floor 45 hw cycles/op, interpretation
+  ≈3% of a point query, and WAL-vs-DELETE journaling quantified at opcode
+  granularity (`Transaction` 16,231 → 5,562 cycles avg, −66%; interpretation
+  floor unchanged). `targets/sqlite/findings-vdbe-lifecycle.md` carries the
+  repro chain; the profile parser is TDD-tested. Target 7 (ioquake3 QVM) adds
+  a second `measured` engine witness: dispatch floor 7.2 cycles/instr
+  (~6× cheaper than VDBE — register-cached dispatch), interpreter/JIT ratio
+  10.3–18.5× corroborating the transfer test's 10–22× band, syscall trap
+  ~16 cycles JIT-proof. `targets/qvm/findings-qvm-floor.md`.
 - **Scale honesty:** at TH04's own scale, V8 makes most of this free — the
   mechanisms matter when populations, traffic, or correctness requirements grow
   past the defaults' comfort zone (exactly where modern systems live).

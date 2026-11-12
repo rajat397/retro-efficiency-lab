@@ -9,7 +9,18 @@ specific code is ~zero; behavior ships as payload.
   **45 hw cycles/op**, Column at 68 — interpretation ≈ 3% of a point
   query's cycles; Transaction lifecycle dominates (77%). Built with
   `-DVDBE_PROFILE`; upstream amalgamation bug patched en route
-  (`targets/sqlite/findings-vdbe-profile.md`).
+  (`targets/sqlite/findings-vdbe-profile.md`). WAL-vs-DELETE measured at
+  opcode granularity: `Transaction` 16,231 → 5,562 cycles avg (−66%,
+  identical 800-exec sets) is the journaling delta; work opcodes and the
+  45-cycle interpretation floor are unchanged — lifecycle cost only
+  (`targets/sqlite/findings-vdbe-lifecycle.md`, parser TDD-tested).
+- **ioquake3 QVM** (2020s, GPL source; **measured**): the real interpreter
+  from source against toolchain-assembled `.qvm` programs — dispatch floor
+  **7.2 cycles/instr** (min 6.1), ~6× cheaper than VDBE per dispatch (top-of-
+  stack cached in registers across ops); interpreter/JIT ratio **10.3–18.5×**
+  on compute loops, matching the transfer test's 10–22× band; syscall trap
+  ~16 cycles, identical interpreted or JIT'd
+  (`targets/qvm/findings-qvm-floor.md`).
 - **SQLite** (2000–, official source, traced): the VDBE — `sqlite3VdbeExec`
   (`src/vdbe.c:903`, ~200 opcode arms) interprets compiled query programs;
   real EXPLAIN dumps show 15–49-op programs with Gosub/Return subroutines

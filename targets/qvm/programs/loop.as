@@ -1,0 +1,18 @@
+code
+
+proc testmain 4 0
+	ADDRL 0
+	CNSTI4 100000
+	ASGNI4
+LABEL loop
+	ADDRL 0
+	ADDRL 0
+	INDIRI4
+	CNSTI4 1
+	SUBI4
+	ASGNI4
+	ADDRL 0
+	INDIRI4
+	CNSTI4 0
+	NEI4 loop
+endproc testmain 4 0

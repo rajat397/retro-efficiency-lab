@@ -82,3 +82,23 @@ interpreter shows the absolute floor is negligible next to any real work
 sharing the statement. The rule stands, strengthened: the lifecycle and
 I/O-adjacent compiled work dominate; interpretation of *cold control* is
 effectively free.
+
+## MEASURED upgrade (2026-11-13): the second engine — ioquake3's QVM
+
+Built the real ioquake3 interpreter and x86 JIT from source against
+toolchain-assembled q3asm programs (`targets/qvm/findings-qvm-floor.md`):
+
+- **Dispatch floor: 7.2 cycles/instruction** (min 6.1) interpreted — ~6×
+  cheaper than VDBE's 45. Same giant-switch architecture; the difference is
+  that QVM's interpreter caches top-of-stack in `r0`/`r1` registers across
+  ops instead of re-reading the stack from memory each dispatch.
+- **Interpreter/JIT ratio on compute loops: 10.3–18.5×** — the same band the
+  M-1 transfer test measured for a JS interpreter (10–22×). Two independent
+  engines agree on the tax.
+- **Syscall trap: ~16 cycles**, identical interpreted or JIT'd — the VM
+  boundary is a C-call, not bytecode, so the JIT cannot optimize it away.
+
+The rule gains a second leg: *dispatch register discipline* sets the floor
+(QVM 7.2 vs VDBE 45 cycles/op), and hot compute code wants the JIT regardless
+of how good the interpreter is, while boundary crossings cost what the C-call
+costs.
