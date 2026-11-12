@@ -62,6 +62,20 @@ exactly two lists at once via `insertsprite(sectnum, statnum)`.
   "none found"; spawned NEW card M-11 (work budgets, with Duke3D's
   clipmoveboxtracenum=3 as second witness).
 
+### Probe outcomes, round 2 (2026-11-12, subagent-dispatched, evidence-gated)
+
+- `findings-T5C.md` — ride value = pure function of ratings with age-decay
+  table + duplicate-penalty (`RideRatings.cpp:1111-1171`); willingness-to-pay
+  = price vs 2× ride value with ÷4 entry-paid adjustment and 50% good-value
+  band (`Guest.cpp:2110-2148`); 10-slot customer history on a 960-tick shift
+  (`Ride.cpp:826-830`). Mechanism: M-2 fixed pools strong match.
+- `findings-T5D.md` — park rating = `CalculateParkRating` (`world/Park.cpp:376`,
+  clamped 0-999 at :488), recomputed every 512 ticks in the SAME block as the
+  guest-probability recompute (`Park.cpp:334-340`) — the loop is CLOSED on one
+  two-timescale clock: guests → ride value → rating → spawn probability →
+  guests. Negative leg: guests degrade tidiness/happiness. Honest note:
+  vandalism is not a direct rating term in this port (award predicates only).
+
 ## Next probes
 
 1. Guest generation law: find the spawn-rate/park-rating control loop in
