@@ -53,11 +53,21 @@ These are the claims with claim-like force. Evidence chains: `catalog/mechanisms
    lists, procedural-from-seeds. Measured on a 2026 stack in transfer tests.
 6. **Budget disciplines are resource-agnostic; the port is re-deriving the unit.**
    TH04's pool/budget/step-down disciplines port from CPU/frame/slots to
-   tokens/rate-limits (M-12, transfer-tested): 100% completion vs 34 starved,
-   runaway waste 20% of spend → 0, 900k 429 backoffs → 0, at identical
-   quota-bound p99 lag. The port's real work is the four break-points (leased
-   quotas, money-vs-time quality ladders, determinism asymmetry, silent
-   truncation) — recorded in `catalog/mechanisms/M-12-budget-portability.md`.
+   tokens/rate-limits (M-12, transfer-tested, now with a network-pathology
+   layer): 100% completion vs 29 starved, runaway waste 18% of spend → 0,
+   961k rate-limit rejections → 0, at identical quota-bound p99 lag. The port's
+   real work is the four break-points (leased quotas, money-vs-time quality
+   ladders, determinism asymmetry, silent truncation) — recorded in
+   `catalog/mechanisms/M-12-budget-portability.md`.
+6b. **Disciplines are not substitutes; each buys a different thing.**
+   Decomposition on the same workload: the **per-task budget** stops runaway
+   *spend* (563,356 → 0 tok) and AIMD alone does not (82,771 tok still burned);
+   a **lease** avoids *discovery* (0 rejections vs AIMD's 600) while AIMD
+   matches it on completion (180/180) and cost ($5.97 vs $5.99); **jitter**
+   bounds the thundering herd (naive synchronized 192 retries in one instant
+   vs 1–2). Porting an analogy wholesale would have hidden this — AIMD was
+   first implemented with a concurrency-only window and looked like a failure
+   (115/180) until it was ported faithfully (TCP's cwnd is a *byte* window).
 7. **Lifecycle (not interpretation) dominates statement cost.** SQLite point query:
    77% of cycles are `Transaction`+`Halt` lifecycle, ~3% interpretation; WAL mode's
    win is a −66% `Transaction` opcode delta, and the 45-cycle floor is unchanged.

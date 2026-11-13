@@ -58,24 +58,65 @@ wrong (the TH04 constants were tuned over years).
 **Status.** **proven (at the orchestration-model level)** — transfer test
 `catalog/transfer-tests/M-12-budget-portability/bench.mjs` (deterministic
 discrete-event sim: 200 tasks, 20 runaway, provider 8-conc / 15,000→7,500 TPM
-halving at minute 1, virtual-clock, no LLM calls). Measured:
+halving at minute 1, virtual-clock, no LLM calls). Extended 2026-11-13 with a
+**network pathology layer** (jitter, slow tail, client-side timeout with
+tokens still billed, 5xx partial failures — a deterministic tape shared by
+every runtime) and a **fourth runtime** (`aimd`, Jacobson AIMD with a learned
+window instead of a lease) plus its control (`aimd_noBudget`). Measured:
 
-| metric | naive | budgeted |
-|---|---|---|
-| real tasks completed | 146/180 (34 starved at horizon) | **180/180** |
-| runaway agents | never stop | 20/20 budget-killed at turn 12 |
-| tokens burned past budget | 633,374 (**20% of spend = $1.27**) | 0 |
-| 429 backoffs | 900,937 | **0** (leased bucket) |
-| p99 lag | 26,223 s | 25,860 s (quota-bound both) |
+Four runtimes over the same task list, provider, and **network pathology
+tape** (jitter 0–60 ms · slow tail 2% · client timeout 2,000 ms with tokens
+still billed · 5xx 1%; draw *N* is a pure function of (seed, *N*), so every
+runtime meets the same pathology and the comparison isolates discipline):
 
-Oracle: the orchestration trace (1,997 decisions) hashes identical across
-repeated runs — the budget/scheduling layer is replayable.
+| metric | naive | budgeted | aimd | aimd_noBudget |
+|---|---|---|---|---|
+| real tasks completed | 151/180 | **180/180** | **180/180** | 177/180 |
+| runaway agents | never stop | 20/20 budget-killed at turn 12 | 20/20 | never stop |
+| tokens burned past budget | 563,356 | **0** | **0** | 82,771 |
+| 429 rate-limit rejections | 961,375 | **0** (leased bucket) | 600 (discovery) | 612 |
+| client timeouts | 37 | 33 | 33 | 34 |
+| peak synchronized retries | **192** | 1 | 2 | 2 |
+| $ spent | $6.63 | $5.99 | $5.97 | $6.09 |
+
+Oracle: the orchestration trace (per runtime) hashes identical across repeated
+runs — the budget/scheduling layer is replayable, for all four runtimes.
+
+**Three findings the network-pathology layer produced (each measured as a
+failure before it was fixed):**
+
+1. **The per-task budget stops spend; AIMD does not.** `aimd_noBudget` still
+   burns 82,771 tok past budget while `aimd` (AIMD **plus** the M-11 budget)
+   burns 0. AIMD bounds *concurrency*, not per-task spend. An earlier revision
+   of this bench reported "waste 0" for a runtime that had no budget at all —
+   an accounting artifact presented as a measurement; waste is now counted for
+   every runtime.
+2. **A lease avoids discovery; AIMD must pay for it.** The leased bucket takes
+   0 rejections because the provider cooperates; AIMD takes ~600 probes to
+   learn the same quota and still reaches 180/180 at the same cost.
+3. **Without jitter, retries synchronize** — `naive` peaked at 192 retries in
+   one virtual instant; the disciplined runtimes peaked at 1–2.
+
+**AIMD porting notes (Jacobson 1988 → agent fleet).** An AIMD with only a
+concurrency window thrashes against a *token-rate* limit (measured 735,649
+rejections, 115/180 completed): TCP's congestion window is a **byte** window,
+so the faithful port carries a token window as well. Two rules had to be
+honored, each measured as a failure first: the window must not shrink below
+one segment (MSS floor) or a single oversized call at the head of the queue
+deadlocks admission (0/180); and additive increase must be ACK-clocked (one
+segment per ACK) rather than a small fixed constant, which was ~40× too slow
+to converge inside the horizon (73/180).
 
 **Scope honesty.** Proven: the *port* — pool, per-task budget, leased quota, and
 the one-time step-down on an externally-halved quota (break-point 1) all work
-against token/rate-limit resources with metered, deterministic metrics. Not yet
-exercised: break-points 2–4 (model-tier quality ladders, determinism against
-real LLM output, context-window eviction) — the sim's "completions" are a
-cost/latency model, so only the orchestration layer's claims are measured.
-First card seeded *from* the lab's own synthesis rather than from a binary —
-the loop feeding itself.
+against token/rate-limit resources with metered, deterministic metrics; and
+AIMD reaches the same completion and cost as the lease without provider
+cooperation, paying ~600 discovery rejections for it. Not yet exercised:
+break-points 2–4 (model-tier quality ladders, determinism against real LLM
+output, context-window eviction) — the sim's "completions" are a cost/latency
+model, so only the orchestration layer's claims are measured. The pathology
+layer is a *model* of the network, not the network: its rates are chosen, not
+observed. `mock-provider.mjs` (in the transfer-test dir) exists to check the
+bench's predicted rejection counts against a live client. First card seeded
+*from* the lab's own synthesis rather than from a binary — the loop feeding
+itself.
