@@ -27,22 +27,22 @@ network). Measured:
 |---|---|
 | closed form vs simulation, material cells | max \|rel.err\| **5.1 %** (mean wait), **3.7 %** (P(wait)) — agrees |
 | real arrival shape (measured, 38,513 tool calls, 29,852 bursts) | E[X] 1.2901, E[X²] 2.4472, **κ = E[X²]/E[X]² = 1.4703** |
-| burst effect on the wait | **3.4× the Poisson answer** (mean, material cells; 4.66× at A=5 → 2.37× at A=12) |
+| burst effect on the wait | **3.9× the simulated-Poisson wait**; the closed form answers **3.6× too low** (mean, material cells; factor 5.11× at A=5 → 2.58× at A=12) |
 | circuits the closed form understates | **up to 2** (largest where the SLO is tightest; 0 at loose SLOs) |
-| classical M^X/G/1 batch term | **over-corrects ~6.8×** — does not transfer to M^X/M/c with c ≫ A |
+| classical M^X/G/1 batch term | **over-corrects ~6.3×** — does not transfer to M^X/M/c with c ≫ A |
 
 **Why this is a finding and not a formula.** The closed form is *validated*
 (≈5 %) for M/M/c and *falsified* for the traffic it is meant to price: the
-Poisson assumption is worth 3.4× on the delay and up to 2 circuits on the
-plan. The premise of the gap is itself measured — real agent traffic carries
+Poisson assumption is worth 3.9× on the delay (the closed form answers
+3.6× too low) and up to 2 circuits on the plan. The premise of the gap is itself measured — real agent traffic carries
 **47 % more count-variance than Poisson** (κ = 1.47), stable across a 40×
 range of burst-grouping windows.
 
 **What did NOT transfer.** The classical compound-Poisson batch correction
 `(E[X²]−E[X]) / (2E[X](1−ρ))` is calibrated for a single-server M^X/G/1 queue
-where ρ→1; applied to M^X/M/c it over-corrects by ~6.8×. The usable
-correction is the **measured** burst factor, and the simulation remains the
-ground truth for a capacity commitment.
+where ρ→1; applied to M^X/M/c it over-corrects by ~6.3×. The usable
+correction is the **measured** burst factor (3.6×), and the simulation remains
+the ground truth for a capacity commitment.
 
 **Scope honesty.** Proven: the closed form and the simulator agree for M/M/c;
 the Poisson assumption understates measured agent traffic by the amounts

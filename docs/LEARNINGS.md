@@ -65,10 +65,10 @@ These are the claims with claim-like force. Evidence chains: `catalog/mechanisms
    max |rel.err| **5.1 %** against a simulation). But real agent traffic is not
    Poisson: measured on this machine's own traffic (38,513 calls, 29,852
    bursts), the count-variance inflation is **κ = 1.47** (stable across a 40×
-   range of burst-grouping windows), which makes the wait **3.4× the Poisson
-   answer** and leaves a plan built on the closed form **up to 2 circuits short**
+   range of burst-grouping windows), which makes the wait **3.9× the Poisson
+   answer** (the closed form answers **3.6× too low**) and leaves a plan built on the closed form **up to 2 circuits short**
    — worst exactly where the SLO is tightest. The classical compound-Poisson
-   batch correction does **not** transfer (it over-corrects ~6.8×; it is
+   batch correction does **not** transfer (it over-corrects ~6.3×; it is
    calibrated for single-server M^X/G/1). So the product ships a *measured*
    burst factor and two numbers — circuits AND token quota. M-13.
 6b. **Disciplines are not substitutes; each buys a different thing.**

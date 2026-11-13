@@ -60,14 +60,15 @@ so they are excluded and counted, not hidden).
 Same offered load, same circuits; arrivals switched from Poisson to the
 measured fan-out shape:
 
-| A | circuits | Poisson (sim) | Erlang C | fan-out (sim) | burst effect | closed form understates |
+| A | circuits | Poisson (sim) | Erlang C (closed form) | fan-out (sim) | burst effect (vs Poisson) | closed form understates |
 |---|---|---|---|---|---|---|
-| 5 | 10 | 0.0263 | 0.0289 | 0.1347 | +366 % | +366 % |
-| 8 | 13 | 0.0570 | 0.0608 | 0.1847 | +224 % | +204 % |
-| 12 | 17 | 0.0999 | 0.1013 | 0.2404 | +141 % | +137 % |
+| 5 | 10 | 0.0263 | 0.0289 | 0.1476 | +460 % | +411 % |
+| 8 | 13 | 0.0570 | 0.0608 | 0.1903 | +234 % | +213 % |
+| 12 | 17 | 0.0999 | 0.1013 | 0.2611 | +161 % | +158 % |
 
-**Mean: fan-out arrivals make the wait 3.4× the Poisson answer**, and the
-closed form understates the delay by 2.4–3.7×.
+**Mean: fan-out arrivals make the wait 3.9× the simulated-Poisson wait, and
+the closed form answers 3.6× too low** (the two differ because the closed form
+and the Poisson simulation differ by a few percent themselves — Part 1).
 
 ### The buyer answer, by SLO
 
@@ -100,25 +101,26 @@ problem entirely.
 The classical compound-Poisson (M^X/G/1) Pollaczek-Khinchine batch term,
 `(E[X²]−E[X]) / (2 E[X] (1−ρ))`, was tested against the simulation:
 
-| A | circuits | measured fan-out wait | Erlang C only | + batch term | over/under | measured burst factor |
+| A | circuits | measured fan-out wait | Erlang C only | + batch term | over/under | burst factor vs closed form |
 |---|---|---|---|---|---|---|
-| 5 | 10 | 0.1347 | 0.0289 | 0.9258 | 6.9× | 4.66× |
-| 8 | 13 | 0.1847 | 0.0608 | 1.2268 | 6.6× | 3.04× |
-| 12 | 17 | 0.2404 | 0.1013 | 1.6260 | 6.8× | 2.37× |
+| 5 | 10 | 0.1476 | 0.0289 | 0.9258 | 6.3× | 5.11× |
+| 8 | 13 | 0.1903 | 0.0608 | 1.2268 | 6.4× | 3.13× |
+| 12 | 17 | 0.2611 | 0.1013 | 1.6260 | 6.2× | 2.58× |
 
-**The classical term over-corrects by ~6.8×.** It is calibrated for a
+**The classical term over-corrects by ~6.3×.** It is calibrated for a
 *single-server* M^X/G/1 queue where ρ→1, and does not transfer to M^X/M/c with
 c ≫ A. The usable correction is **empirical**: on the measured traffic shape
-the delay is **3.4× the Poisson answer**. So the product ships the *measured
-factor*, and says that the classical formula does not transfer here.
+the delay is **3.6× the closed-form answer** (5.11× at A=5 → 2.58× at A=12 —
+more circuits absorb the bursts). So the product ships the *measured factor*,
+and says that the classical formula does not transfer here.
 
 ## Scope honesty
 
 - The closed form is proven only for M/M/c (Poisson, exponential). The bench
   shows it agreeing to ~5 % there, and shows it **understating** real traffic.
-- The burst factor (3.4×) is measured at *these* operating points on *this*
-  traffic shape. It is not a universal constant: it falls from 4.66× at A=5
-  to 2.37× at A=12 (more circuits absorb the bursts), and it is a property of
+- The burst factor (3.6×) is measured at *these* operating points on *this*
+  traffic shape. It is not a universal constant: it falls from 5.11× at A=5
+  to 2.58× at A=12 (more circuits absorb the bursts), and it is a property of
   the arrival distribution, not of Erlang.
 - The M^X/M/c **exact** solution is not used. The simulation is the ground
   truth for the fan-out case; the closed form is the benchmark it is measured

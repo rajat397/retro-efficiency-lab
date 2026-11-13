@@ -83,7 +83,7 @@ table supplies μ.
 It is the **premise check** for M-13 (`catalog/transfer-tests/M-13-erlang-capacity/`):
 Erlang's closed form assumes Poisson arrivals, and this measurement shows real
 agent traffic is not Poisson (κ = 1.47). M-13 then measures what that
-assumption costs — a 3.4× delay gap and up to 2 circuits of under-provisioning.
+assumption costs — a 3.9× delay gap and up to 2 circuits of under-provisioning.
 
 It also partially answers the lab's standing open item — "real traffic traces
 (needs a partner)" — from local data rather than a partner: the arrival

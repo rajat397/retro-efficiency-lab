@@ -195,7 +195,7 @@ for (const A of [5, 8, 12]) {
 		const gUnder = rel(fan.meanWait, cf); // how much the closed form understates
 		const gP = rel(fan.pWait, poi.pWait);
 		const material = cf >= MATERIAL || poi.pWait >= 0.01;
-		gapRows.push({ A, c, gWait, gUnder, gP, material });
+		gapRows.push({ A, c, gWait, gUnder, gP, material, fanMeanWait: fan.meanWait, base: cf });
 		console.log(
 			`  ${String(A).padStart(2)} | ${String(c).padStart(8)} | ${poi.meanWait.toFixed(4).padStart(13)} | ${cf.toFixed(4).padStart(21)} | ${fan.meanWait.toFixed(4).padStart(15)} | ${(gWait * 100).toFixed(1).padStart(11)}% | ${(gUnder * 100).toFixed(1).padStart(23)}% | ${poi.pWait.toFixed(4)} -> ${fan.pWait.toFixed(4)} (${(gP * 100).toFixed(0)}%)`,
 		);
@@ -205,8 +205,8 @@ const matRows = gapRows.filter((r) => r.material);
 const meanGap = matRows.reduce((s, r) => s + r.gWait, 0) / matRows.length;
 const meanUnder = matRows.reduce((s, r) => s + r.gUnder, 0) / matRows.length;
 console.log(`\n  (material cells only: ${matRows.length}/${gapRows.length}; the rest have both sides ~0)`);
-console.log(`  mean burst effect on the delay: ${(meanGap * 100).toFixed(0)}% — fan-out arrivals make the wait ${(1 + meanGap).toFixed(1)}x the Poisson answer`);
-console.log(`  mean amount the CLOSED FORM understates the delay: ${(meanUnder * 100).toFixed(0)}%`);
+console.log(`  burst effect (vs the SIMULATED Poisson wait): ${(meanGap * 100).toFixed(0)}% — fan-out arrivals make the wait ${(1 + meanGap).toFixed(1)}x`);
+console.log(`  amount the CLOSED FORM understates the delay (vs the closed form): ${(meanUnder * 100).toFixed(0)}% — the closed form answers ${(1 + meanUnder).toFixed(1)}x too low`);
 
 // how many extra circuits does the closed form get wrong? A single loose SLO
 // can sit outside the sensitive region (both shapes meet it with the same
@@ -250,33 +250,27 @@ console.log('classical M^X/G/1 batch term: (E[X^2]-E[X]) / (2 E[X] (1-rho))\n');
 console.log('  A | circuits | measured fan-out wait | Erlang C only | + batch term | over/under | MEASURED burst factor');
 const factors = [];
 for (const r of matRows) {
-	const { A, c } = r;
-	const lambda = A * SCENARIO.mu;
-	const fan = simulateQueue({ c, lambda, mu: SCENARIO.mu, batch: measuredBatch, seed: 777 + c });
-	const base = erlangWait(c, A, SCENARIO.mu);
+	const { A, c, fanMeanWait, base } = r; // REUSE Part 2's cells and draws -- a
+	// second simulation with a different seed produced a slightly different
+	// factor (3.4x vs 3.6x) for no reason other than sampling noise.
 	const rho = A / c;
 	const term = batchDelayTerm(measuredBatch.E_X, measuredBatch.E_X2, rho);
 	const corrected = base + term;
-	const factor = base > 0 ? fan.meanWait / base : NaN;
+	const factor = base > 0 ? fanMeanWait / base : NaN;
 	factors.push(factor);
 	console.log(
-		`  ${String(A).padStart(2)} | ${String(c).padStart(8)} | ${fan.meanWait.toFixed(4).padStart(23)} | ${base.toFixed(4).padStart(14)} | ${corrected.toFixed(4).padStart(13)} | ${(corrected / fan.meanWait).toFixed(1).padStart(9)}x | ${factor.toFixed(2).padStart(6)}x`,
+		`  ${String(A).padStart(2)} | ${String(c).padStart(8)} | ${fanMeanWait.toFixed(4).padStart(23)} | ${base.toFixed(4).padStart(14)} | ${corrected.toFixed(4).padStart(13)} | ${(corrected / fanMeanWait).toFixed(1).padStart(9)}x | ${factor.toFixed(2).padStart(6)}x`,
 	);
 }
 const meanFactor = factors.filter((f) => Number.isFinite(f)).reduce((a, b) => a + b, 0) / factors.filter((f) => Number.isFinite(f)).length;
-const overFactors = [];
-{
-	const r0 = matRows[0];
-	const c0 = r0.c, A0 = r0.A, lambda0 = A0 * SCENARIO.mu;
-	const fan0 = simulateQueue({ c: c0, lambda: lambda0, mu: SCENARIO.mu, batch: measuredBatch, seed: 777 + c0 });
-	const corr0 = erlangWait(c0, A0, SCENARIO.mu) + batchDelayTerm(measuredBatch.E_X, measuredBatch.E_X2, A0 / c0);
-	overFactors.push(corr0 / fan0.meanWait);
-}
+const overFactors = matRows.map(
+	(r) => (r.base + batchDelayTerm(measuredBatch.E_X, measuredBatch.E_X2, r.A / r.c)) / r.fanMeanWait,
+);
 console.log(
 	`\n  The classical batch term OVER-corrects by ~${overFactors[0].toFixed(1)}x here: it is calibrated for a SINGLE-server (M^X/G/1) queue where rho->1, and does not transfer to M^X/M/c with c >> A.`,
 );
 console.log(
-	`  The usable correction is EMPIRICAL: on the measured fan-out shape, the delay is ${meanFactor.toFixed(1)}x the Poisson answer at these operating points.`,
+	`  The usable correction is EMPIRICAL: on the measured fan-out shape, the delay is ${meanFactor.toFixed(1)}x the CLOSED-FORM answer at these operating points (the factor vs the SIMULATED Poisson wait is ${(1 + meanGap).toFixed(1)}x -- the two differ because the closed form and the Poisson simulation differ by a few percent themselves).`,
 );
 console.log(`  So the product ships the factor, not the classical formula — and says so.`);
 

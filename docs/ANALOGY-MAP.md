@@ -119,16 +119,16 @@ offered load and circuits:
 
 | A | circuits | Erlang C | fan-out (simulated) | closed form understates |
 |---|---|---|---|---|
-| 5 | 10 | 0.0289 | 0.1347 | +366 % |
-| 8 | 13 | 0.0608 | 0.1847 | +204 % |
-| 12 | 17 | 0.1013 | 0.2404 | +137 % |
+| 5 | 10 | 0.0289 | 0.1476 | +411 % |
+| 8 | 13 | 0.0608 | 0.1903 | +213 % |
+| 12 | 17 | 0.1013 | 0.2611 | +158 % |
 
-Mean **3.4× the Poisson answer**, and in capacity-plan terms the closed form
+Mean **3.9× the Poisson answer** (the closed form answers 3.6× too low), and in capacity-plan terms the closed form
 buys **up to 2 circuits too few** — largest where the SLO is tightest (0.05–0.25 s),
 zero at loose SLOs (2 s), which is exactly how a single loose SLO hides the
 problem. The classical compound-Poisson batch correction does **not** transfer
-(it over-corrects ~6.8× — it is calibrated for single-server M^X/G/1), so the
-correction the product ships is the **measured** burst factor, not a formula.
+(it over-corrects ~6.3× — it is calibrated for single-server M^X/G/1), so the
+correction the product ships is the **measured** burst factor (3.6×), not a formula.
 
 **The honest product shape:** the capacity answer is **two numbers** — circuits
 (slots) *and* token quota. M-12's linear estimate prices only the quota.
