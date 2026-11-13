@@ -77,11 +77,13 @@ boundary*. Cascades become scheduler-independent.
 
 ---
 
-## The catalog (13 mechanisms, 4 engine families)
+## The catalog (14 mechanisms, 5 engine families)
 
 | Status | Mechanisms |
 |---|---|
-| **Proven** (transfer-tested, runnable) | **all thirteen** — slot pool (M-2) · measured slowdown (M-5) · replay determinism (M-4) · deferred dispatch (M-3) · fnptr composition (M-7) · zone allocator (M-8) · LUT trig (M-9) · index-linked lists (M-10) · procedural-from-seeds (M-6) · event VM (M-1) · work budgets (M-11) · budget portability (M-12) · Erlang capacity planning (M-13) |
+| **Proven** (transfer-tested, runnable) | **nine** — slot pool (M-2) · measured slowdown (M-5) · replay determinism (M-4) · deferred dispatch (M-3) · index-linked lists (M-10) · procedural-from-seeds (M-6) · work budgets (M-11) · budget portability (M-12) · Erlang capacity planning (M-13) |
+| **Cataloged** (≥2 witnesses, no transfer test) | **four** — event VM (M-1) · fnptr composition (M-7) · zone allocator (M-8) · LUT trig (M-9) |
+| **Single-witness** | **one** — range-intersection attribution (M-14, from cold run #1) |
 
 Engine families spanned: id Tech 1 (1993) · Build (1996) · Chahi's AW VM (1991) ·
 Borland/Clickteam PC-98 era (1998/2003). Full evidence chain per card:
