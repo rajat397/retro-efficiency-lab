@@ -1,10 +1,11 @@
 {
  "source": "local opencode session store (real agent traffic on this machine)",
+ "generated_at": "2026-11-13T19:00:52.546Z",
  "provenance": {
   "db_path": "/home/rajat/.local/share/opencode/opencode.db",
-  "tool_parts_scanned": 38515,
-  "calls_with_start_timestamp": 38513,
-  "observation_span_hours": 1613.1,
+  "tool_parts_scanned": 38772,
+  "calls_with_start_timestamp": 38770,
+  "observation_span_hours": 1630.3,
   "extracted_by": "scripts/extract-fanout.mjs"
  },
  "method": {
@@ -13,10 +14,10 @@
   "window_is_a_method_choice": "see window_sensitivity — the moments are stable across a 40x range of windows"
  },
  "bursts": {
-  "count": 29852,
+  "count": 30096,
   "histogram": {
-   "1": 25552,
-   "2": 2059,
+   "1": 25783,
+   "2": 2072,
    "3": 1119,
    "4": 579,
    "5": 340,
@@ -29,71 +30,248 @@
    "12": 3,
    "18": 3
   },
-  "E_X": 1.2901,
-  "E_X2": 2.4472,
-  "variance": 0.7828,
-  "scv": 0.4703,
-  "kappa_count_variance_inflation": 1.4703,
-  "pct_multi": 14.4,
-  "E_X_given_multi": 3.0142
+  "E_X": 1.2882,
+  "E_X2": 2.4368,
+  "variance": 0.7773,
+  "scv": 0.4684,
+  "kappa_count_variance_inflation": 1.4684,
+  "pct_multi": 14.33,
+  "E_X_given_multi": 3.0111
  },
  "window_sensitivity": [
   {
    "window_ms": 50,
-   "bursts": 31176,
-   "E_X": 1.2353,
-   "E_X2": 2.1317,
-   "kappa_E_X2_over_E_X2": 1.3969,
-   "pct_multi": 11.89
+   "bursts": 31428,
+   "E_X": 1.2336,
+   "E_X2": 2.1231,
+   "kappa_E_X2_over_E_X2": 1.3951,
+   "pct_multi": 11.81
   },
   {
    "window_ms": 100,
-   "bursts": 30739,
-   "E_X": 1.2529,
-   "E_X2": 2.2635,
-   "kappa_E_X2_over_E_X2": 1.4419,
-   "pct_multi": 12.31
+   "bursts": 30991,
+   "E_X": 1.251,
+   "E_X2": 2.2537,
+   "kappa_E_X2_over_E_X2": 1.44,
+   "pct_multi": 12.23
   },
   {
    "window_ms": 250,
-   "bursts": 30461,
-   "E_X": 1.2643,
-   "E_X2": 2.3334,
-   "kappa_E_X2_over_E_X2": 1.4597,
-   "pct_multi": 12.74
+   "bursts": 30711,
+   "E_X": 1.2624,
+   "E_X2": 2.3233,
+   "kappa_E_X2_over_E_X2": 1.4578,
+   "pct_multi": 12.66
   },
   {
    "window_ms": 500,
-   "bursts": 30124,
-   "E_X": 1.2785,
-   "E_X2": 2.3965,
-   "kappa_E_X2_over_E_X2": 1.4662,
-   "pct_multi": 13.73
+   "bursts": 30370,
+   "E_X": 1.2766,
+   "E_X2": 2.3863,
+   "kappa_E_X2_over_E_X2": 1.4643,
+   "pct_multi": 13.65
   },
   {
    "window_ms": 1000,
-   "bursts": 29852,
-   "E_X": 1.2901,
-   "E_X2": 2.4472,
-   "kappa_E_X2_over_E_X2": 1.4703,
-   "pct_multi": 14.4
+   "bursts": 30096,
+   "E_X": 1.2882,
+   "E_X2": 2.4368,
+   "kappa_E_X2_over_E_X2": 1.4684,
+   "pct_multi": 14.33
   },
   {
    "window_ms": 2000,
-   "bursts": 29553,
-   "E_X": 1.3032,
-   "E_X2": 2.5222,
-   "kappa_E_X2_over_E_X2": 1.4852,
-   "pct_multi": 14.96
+   "bursts": 29797,
+   "E_X": 1.3011,
+   "E_X2": 2.5111,
+   "kappa_E_X2_over_E_X2": 1.4832,
+   "pct_multi": 14.88
   }
  ],
+ "segments": {
+  "note": "burst factor kappa = E[X^2]/E[X]^2 per segment; bootstrap 95% CI over 2000 resamples, seeded",
+  "by_agent": {
+   "build": {
+    "bursts": 2393,
+    "E_X": 1.1805,
+    "E_X2": 1.8107,
+    "kappa": 1.2993,
+    "kappa_ci95": [
+     1.224,
+     1.3911
+    ],
+    "pct_multi": 11.12,
+    "histogram": {
+     "1": 2127,
+     "2": 170,
+     "3": 60,
+     "4": 19,
+     "5": 13,
+     "6": 1,
+     "10": 2,
+     "11": 1
+    }
+   },
+   "general": {
+    "bursts": 12102,
+    "E_X": 1.5311,
+    "E_X2": 3.7545,
+    "kappa": 1.6016,
+    "kappa_ci95": [
+     1.5666,
+     1.643
+    ],
+    "pct_multi": 24.46,
+    "histogram": {
+     "1": 9142,
+     "2": 1242,
+     "3": 813,
+     "4": 451,
+     "5": 274,
+     "6": 102,
+     "7": 20,
+     "8": 29,
+     "9": 14,
+     "10": 8,
+     "11": 2,
+     "12": 2,
+     "18": 3
+    }
+   },
+   "orchestrator": {
+    "bursts": 12898,
+    "E_X": 1.084,
+    "E_X2": 1.3269,
+    "kappa": 1.1293,
+    "kappa_ci95": [
+     1.1148,
+     1.1444
+    ],
+    "pct_multi": 5.78,
+    "histogram": {
+     "1": 12153,
+     "2": 506,
+     "3": 170,
+     "4": 49,
+     "5": 14,
+     "6": 4,
+     "7": 1,
+     "9": 1
+    }
+   },
+   "intent-driven": {
+    "bursts": 899,
+    "E_X": 1.2125,
+    "E_X2": 1.8576,
+    "kappa": 1.2636,
+    "kappa_ci95": [
+     1.2052,
+     1.3227
+    ],
+    "pct_multi": 13.35,
+    "histogram": {
+     "1": 779,
+     "2": 70,
+     "3": 33,
+     "4": 15,
+     "5": 1,
+     "7": 1
+    }
+   },
+   "rea": {
+    "bursts": 1506,
+    "E_X": 1.0558,
+    "E_X2": 1.2058,
+    "kappa": 1.0818,
+    "kappa_ci95": [
+     1.0516,
+     1.1133
+    ],
+    "pct_multi": 4.25,
+    "histogram": {
+     "1": 1442,
+     "2": 52,
+     "3": 5,
+     "4": 6,
+     "5": 1
+    }
+   }
+  },
+  "by_project": {
+   "/home/rajat/Documents/Default Project": {
+    "bursts": 9954,
+    "E_X": 1.6201,
+    "E_X2": 4.3486,
+    "kappa": 1.6569,
+    "kappa_ci95": [
+     1.617,
+     1.6984
+    ],
+    "pct_multi": 26.74,
+    "histogram": {
+     "1": 7292,
+     "2": 1016,
+     "3": 712,
+     "4": 444,
+     "5": 296,
+     "6": 104,
+     "7": 23,
+     "8": 31,
+     "9": 16,
+     "10": 11,
+     "11": 3,
+     "12": 3,
+     "18": 3
+    }
+   },
+   "/home/rajat": {
+    "bursts": 16345,
+    "E_X": 1.1195,
+    "E_X2": 1.4803,
+    "kappa": 1.1812,
+    "kappa_ci95": [
+     1.1658,
+     1.1962
+    ],
+    "pct_multi": 7.65,
+    "histogram": {
+     "1": 15094,
+     "2": 757,
+     "3": 345,
+     "4": 105,
+     "5": 35,
+     "6": 6,
+     "7": 2,
+     "10": 1
+    }
+   },
+   "/home/rajat/Downloads": {
+    "bursts": 1716,
+    "E_X": 1.0787,
+    "E_X2": 1.2698,
+    "kappa": 1.0913,
+    "kappa_ci95": [
+     1.0671,
+     1.1188
+    ],
+    "pct_multi": 6.7,
+    "histogram": {
+     "1": 1601,
+     "2": 103,
+     "3": 5,
+     "4": 6,
+     "5": 1
+    }
+   }
+  }
+ },
  "concurrency_demand": {
   "peak_in_flight": 25,
-  "mean_in_flight_time_weighted": 0.1927,
+  "mean_in_flight_time_weighted": 0.1913,
   "histogram": {
-   "0": 15003,
-   "1": 21409,
-   "2": 10961,
+   "0": 15195,
+   "1": 21666,
+   "2": 11026,
    "3": 8752,
    "4": 7485,
    "5": 5398,
