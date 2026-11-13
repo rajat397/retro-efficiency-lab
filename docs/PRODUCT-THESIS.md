@@ -97,10 +97,13 @@ L3  HARNESS        pathology rig: mock provider with injected 429/5xx/timeout/ji
 L2  GOVERNOR       admission control: leases concurrency + rate · AIMD when the quota
                    can't be leased · jittered retries · hard task-budget kill ·
                    measured degradation instead of dropping
-L1  UNIT+LEDGER    the one primitive everything needs: a task-scoped budget whose unit is
-                   re-derived for the resource class · an append-only ledger that
-                   attributes every unit at admission time (M-14's lesson: ownership
-                   derived where the data already exists)
+L1  UNIT+LEDGER    the one primitive everything needs, now specified by M-15/M-15b:
+                   a task-scoped budget whose DISCRIMINATOR is a progress signal
+                   (no consumption unit separates runaway from legitimate work) ·
+                   a cheap consumption ceiling as the backstop · an append-only
+                   admission-time ledger (post-hoc reconstruction cannot recover
+                   the owner — measured: it reconciles the invoice while
+                   attributing 25–55 of 60 tasks wrongly)
 L0  FUNDAMENTALS   the catalog: M-2 pool · M-5 measured degradation · M-11 hard budget ·
                    M-12 portability · M-13 capacity · M-14 attribution
 ```
@@ -122,6 +125,7 @@ incumbents do not answer it.
 | A per-task budget kills runaways without killing good work | the unit cannot distinguish runaway from hard-but-legitimate work | **REFUTED (M-15, 2026-11-13).** Measured: at every cap, the observed false kills equal the number of productive tasks costing more than the cap — a consumption unit's false kills are *forced* by the cost distribution. The discriminating signal is **progress**, and the primitive is a *pair* (cheap ceiling + progress signal), not a unit. Open: whether real fleets exhibit the progress/stall distinction at all (the workload's progress model is assumed, not measured). |
 | The degradation ladder's order is measurable | ordering cannot be established without a quality metric | **OPEN** (E5, not run) — note M-15's consequence: the first rung may not be a *model* choice at all, since a progress signal must exist before any ladder rung can be evaluated |
 | The arrival shape generalizes | κ differs materially across fleets | **OPEN** (T9: one machine, one operator) |
+| Post-hoc spend attribution is equivalent to admission-time attribution | reconstruction matches admission-time attribution task-for-task | **REFUTED (M-15b, 2026-11-13).** All three post-hoc strategies reconciled the invoice total exactly while attributing 25–55 of 60 tasks wrongly; 36 charges were owned by nobody and 94 were attributed to a task that could not possibly have made them. The ledger must be inside the admission path. |
 | A governor reduces real spend | production fleets show no reduction | untested — needs a live fleet |
 
 ---
