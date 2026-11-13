@@ -130,6 +130,17 @@ to this repo's mechanism cards).
   `targets/vmap/findings*.md`, purely so the file cannot be confused with the other targets'
   findings files (which this run is forbidden to read).
 
+- **D8 (step 4, the bench had no teeth — found and fixed before the final commit).** The first
+  version of the transfer test used a purely random fixture. Because random handler segments
+  almost never land exactly on a block boundary, **the bench passed even with the half-open rule
+  broken** (`AX > BX && AX <= DX` instead of `AX >= BX && AX < DX`): the mutant produced the same
+  attribution table, so the pinned digest still matched. That is the runbook's "no silent reruns"
+  lesson in its step-4 form — a bench that cannot fail is theater. Fix: 24 explicit boundary
+  vectors (first segment of every block, last segment of every block, and every block's exclusive
+  upper bound). All three single-bound mutations now fail the bench (16, 1 and 15
+  misattributions respectively) and exit 1. The mutation table is in the transfer test's README.
+  The fixture, the counters and the pinned digest changed as a result; the bench's *claims* did not.
+
 ## Outcome (end of step 2 — the surprise target HELD)
 
 **The surprise target HELD.** The falsifiable form written above is confirmed by the code, not

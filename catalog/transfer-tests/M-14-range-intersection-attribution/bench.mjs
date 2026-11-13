@@ -55,20 +55,14 @@ const BLOCKS = [
 
 const BIOS = 0xf000; // handler outside every enumerated range (RT/BIOS), as on real DOS
 
-function blockOfSegment(seg) {
-  for (let i = 0; i < BLOCKS.length; i++) {
-    if (seg >= BLOCKS[i].start && seg < BLOCKS[i].end) return i;
-  }
-  return -1;
-}
-
 // Build the machine state: 256 vector slots + what really happened at each hook.
 const rnd = prng(SEED);
 const programBlocks = BLOCKS.map((b, i) => ({ b, i })).filter((x) => x.b.kind === "program");
 
-const vectors = new Array(VECTORS); // { segment, installer, registered }
+const vectors = new Array(VECTORS); // { segment, installer, registered, hooked }
 const truth = new Array(VECTORS).fill(-1); // physical owner block index, -1 = nobody
 const registration = new Map(); // vector -> installer block index (the registry baseline)
+const unusedSlots = []; // vector indices that ended up unused, reused for boundary cases
 
 let hooked = 0;
 let sharedDispatcher = 0;
@@ -80,6 +74,7 @@ for (let v = 0; v < VECTORS; v++) {
   if (roll < 0.72) {
     // unused vector: the IVT entry points at 0000:0000, which is below every block.
     vectors[v] = { segment: 0x0000, installer: -1, registered: false, hooked: false };
+    unusedSlots.push(v);
     continue;
   }
   hooked++;
@@ -116,6 +111,53 @@ for (let v = 0; v < VECTORS; v++) {
     registration.set(v, installerIdx);
     unowned++;
   }
+}
+
+// ------------------------------------------------- boundary cases (the half-open rule)
+// The load-bearing detail of the mechanism is `start <= seg < end`. Random draws almost never
+// land exactly on a boundary, so a broken rule (`>` / `<=`) would survive a random fixture.
+// These cases are placed explicitly: the first segment of a block (must belong to that block),
+// the last segment of a block (must belong to that block) and the first segment of the NEXT
+// block (which is this block's exclusive upper bound — must NOT belong to this block).
+let boundaryCases = 0;
+let boundaryAtStart = 0;
+let boundaryAtEnd = 0;
+
+for (let bi = 0; bi < BLOCKS.length && unusedSlots.length >= 3; bi++) {
+  const b = BLOCKS[bi];
+  const next = BLOCKS[bi + 1];
+
+  // 1. handler at the block's first segment -> belongs to this block
+  let v = unusedSlots.pop();
+  vectors[v] = { segment: b.start, installer: bi, registered: true, hooked: true };
+  truth[v] = bi;
+  registration.set(v, bi);
+  boundaryCases++;
+  boundaryAtStart++;
+  hooked++;
+
+  // 2. handler at the block's last segment -> belongs to this block
+  v = unusedSlots.pop();
+  vectors[v] = { segment: b.end - 1, installer: bi, registered: true, hooked: true };
+  truth[v] = bi;
+  registration.set(v, bi);
+  boundaryCases++;
+  hooked++;
+
+  // 3. handler at the block's exclusive upper bound -> belongs to the NEXT block (or nobody)
+  v = unusedSlots.pop();
+  const ownerIdx = next ? bi + 1 : -1; // the next block owns the exclusive upper bound
+  vectors[v] = { segment: b.end, installer: ownerIdx === -1 ? bi : ownerIdx, registered: true, hooked: true };
+  truth[v] = ownerIdx;
+  if (ownerIdx === -1) {
+    registration.set(v, bi);
+    unowned++;
+  } else {
+    registration.set(v, ownerIdx);
+  }
+  boundaryCases++;
+  boundaryAtEnd++;
+  hooked++;
 }
 
 // ------------------------------------------------- strategy 1: range intersection (VMAP)
@@ -200,7 +242,7 @@ const digest = createHash("sha256").update(canonical.join("\n"), "utf8").digest(
 
 // The digest is pinned so a third party can regenerate the fixture and confirm the bench
 // measures the same thing. Recompute with: node bench.mjs --print-digest
-const EXPECTED_DIGEST = "71e547c38cf6d42e87353f76ca51c59c69f7b2c0e79c6f8d3e6a091eec7b3d10";
+const EXPECTED_DIGEST = "1f95849c1e662b68bf7347eda0137d2adcbbb196cb961b4e8a1ea6c0041b7319";
 
 // ------------------------------------------------- checks
 
@@ -208,6 +250,11 @@ const checks = [];
 const check = (name, ok, detail) => checks.push({ name, ok, detail });
 
 check("range attribution never misattributes", rangeScore.wrong === 0, `wrong=${rangeScore.wrong}`);
+check(
+  "the half-open range rule survives boundary cases",
+  boundaryCases > 0 && rangeScore.wrong === 0,
+  `boundaryCases=${boundaryCases} atStart=${boundaryAtStart} atEnd=${boundaryAtEnd} wrong=${rangeScore.wrong}`,
+);
 check(
   "range attribution accounts for every hooked vector",
   rangeScore.correct + rangeScore.unattributed === hooked,
@@ -247,6 +294,7 @@ const INFO = [
   `range-intersection: correct=${rangeScore.correct} wrong=${rangeScore.wrong} unattributed=${rangeScore.unattributed} comparisons=${rangeComparisons} writes=${rangeSystemWrites} allocations=${rangeAllocations}`,
   `registry:            correct=${registryScore.correct} wrong=${registryScore.wrong} absent=${registryAbsent} writes=${registryWrites} tableAllocations=${registryTableAllocations}`,
   `probe (oracle):      correct=${probeScore.correct} wrong=${probeScore.wrong} calls=${probeCalls} comparisons=${probeComparisons}`,
+  `boundary cases:      cases=${boundaryCases} atBlockStart=${boundaryAtStart} atNextBlockStart=${boundaryAtEnd}`,
 ];
 for (const line of INFO) console.log(`INFO ${line}`);
 for (const c of checks) console.log(`CHECK ${c.ok ? "PASS" : "FAIL"} ${c.name} (${c.detail})`);
@@ -267,6 +315,7 @@ const verdict = [
   `registryMissed=${registryAbsent}`,
   `registryWrites=${registryWrites}`,
   `probeCorrect=${probeScore.correct}`,
+  `boundaryCases=${boundaryCases}`,
   `probeCalls=${probeCalls}`,
   `digest=${digest}`,
 ].join(" ");

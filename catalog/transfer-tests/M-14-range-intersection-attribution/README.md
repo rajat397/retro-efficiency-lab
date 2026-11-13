@@ -45,7 +45,27 @@ those two questions differ; the bench reports both numbers instead of picking a 
 | `registryCorrect` / `registryWrong` / `registryMissed` | the registry's answers to the *physical* question |
 | `registryWrites` | registration records written at hook time |
 | `probeCorrect` / `probeCalls` | the cooperative oracle |
+| `boundaryCases` | how many explicitly-placed boundary vectors the fixture contains |
 | `digest` | SHA-256 over the canonical attribution table — pinned in the bench, so a third party can regenerate the fixture and confirm both measure the same thing |
+
+## The bench has teeth (mutation check)
+
+The load-bearing detail of the mechanism is the **half-open** rule `start <= seg < end`. A purely
+random fixture almost never puts a handler exactly on a boundary, so a broken rule would pass.
+The fixture therefore places boundary vectors explicitly (24 of them: the first segment of every
+block, the last segment of every block, and every block's exclusive upper bound, which belongs to
+the *next* block).
+
+Breaking the rule in the port makes the bench fail (checked by hand, three mutants):
+
+| mutation | bench result |
+|---|---|
+| `AX > BX && AX <= DX` | FAIL — 16 misattributions, exit 1 |
+| `AX >= BX && AX <= DX` | FAIL — 1 misattribution (the exclusive upper bound), exit 1 |
+| `AX > BX && AX < DX` | FAIL — 15 misattributions, exit 1 |
+
+To reproduce: copy `bench.mjs`, change the `if (AX >= BX && AX < DX)` line in the
+range-intersection loop, and run it.
 
 ## Reproducing the pinned digest
 
