@@ -107,6 +107,14 @@ deadlocks admission (0/180); and additive increase must be ACK-clocked (one
 segment per ACK) rather than a small fixed constant, which was ~40× too slow
 to converge inside the horizon (73/180).
 
+**Capacity proof: rate-only, by construction.** The counterfactual capacity
+output in this card is a **linear rate estimate** (tokens ÷ target time). It
+prices token *quota*, not concurrent *slots*, and it ignores queueing. The
+capacity question that needs slots — "how many concurrent calls do we need so
+the wait stays inside SLO?" — is answered separately in **M-13**, where the
+Erlang closed form is validated against a simulation (≈5 %) and then shown to
+understate the circuits by up to 2 on measured agent traffic.
+
 **Scope honesty.** Proven: the *port* — pool, per-task budget, leased quota, and
 the one-time step-down on an externally-halved quota (break-point 1) all work
 against token/rate-limit resources with metered, deterministic metrics; and

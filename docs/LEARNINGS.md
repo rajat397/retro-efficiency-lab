@@ -59,6 +59,18 @@ These are the claims with claim-like force. Evidence chains: `catalog/mechanisms
    real work is the four break-points (leased quotas, money-vs-time quality
    ladders, determinism asymmetry, silent truncation) — recorded in
    `catalog/mechanisms/M-12-budget-portability.md`.
+6c. **The capacity question has two numbers, and the closed form only prices
+   one.** Erlang's queueing math turns "how many concurrent calls do I need?"
+   into arithmetic — and it is accurate for Poisson arrivals (validated here:
+   max |rel.err| **5.1 %** against a simulation). But real agent traffic is not
+   Poisson: measured on this machine's own traffic (38,513 calls, 29,852
+   bursts), the count-variance inflation is **κ = 1.47** (stable across a 40×
+   range of burst-grouping windows), which makes the wait **3.4× the Poisson
+   answer** and leaves a plan built on the closed form **up to 2 circuits short**
+   — worst exactly where the SLO is tightest. The classical compound-Poisson
+   batch correction does **not** transfer (it over-corrects ~6.8×; it is
+   calibrated for single-server M^X/G/1). So the product ships a *measured*
+   burst factor and two numbers — circuits AND token quota. M-13.
 6b. **Disciplines are not substitutes; each buys a different thing.**
    Decomposition on the same workload: the **per-task budget** stops runaway
    *spend* (563,356 → 0 tok) and AIMD alone does not (82,771 tok still burned);

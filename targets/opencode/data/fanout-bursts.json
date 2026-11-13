@@ -1,0 +1,123 @@
+{
+ "source": "local opencode session store (real agent traffic on this machine)",
+ "provenance": {
+  "db_path": "/home/rajat/.local/share/opencode/opencode.db",
+  "tool_parts_scanned": 38515,
+  "calls_with_start_timestamp": 38513,
+  "observation_span_hours": 1613.1,
+  "extracted_by": "scripts/extract-fanout.mjs"
+ },
+ "method": {
+  "burst_definition": "per session, calls whose start is within window_ms of the group’s first start",
+  "window_ms": 1000,
+  "window_is_a_method_choice": "see window_sensitivity — the moments are stable across a 40x range of windows"
+ },
+ "bursts": {
+  "count": 29852,
+  "histogram": {
+   "1": 25552,
+   "2": 2059,
+   "3": 1119,
+   "4": 579,
+   "5": 340,
+   "6": 110,
+   "7": 25,
+   "8": 31,
+   "9": 16,
+   "10": 12,
+   "11": 3,
+   "12": 3,
+   "18": 3
+  },
+  "E_X": 1.2901,
+  "E_X2": 2.4472,
+  "variance": 0.7828,
+  "scv": 0.4703,
+  "kappa_count_variance_inflation": 1.4703,
+  "pct_multi": 14.4,
+  "E_X_given_multi": 3.0142
+ },
+ "window_sensitivity": [
+  {
+   "window_ms": 50,
+   "bursts": 31176,
+   "E_X": 1.2353,
+   "E_X2": 2.1317,
+   "kappa_E_X2_over_E_X2": 1.3969,
+   "pct_multi": 11.89
+  },
+  {
+   "window_ms": 100,
+   "bursts": 30739,
+   "E_X": 1.2529,
+   "E_X2": 2.2635,
+   "kappa_E_X2_over_E_X2": 1.4419,
+   "pct_multi": 12.31
+  },
+  {
+   "window_ms": 250,
+   "bursts": 30461,
+   "E_X": 1.2643,
+   "E_X2": 2.3334,
+   "kappa_E_X2_over_E_X2": 1.4597,
+   "pct_multi": 12.74
+  },
+  {
+   "window_ms": 500,
+   "bursts": 30124,
+   "E_X": 1.2785,
+   "E_X2": 2.3965,
+   "kappa_E_X2_over_E_X2": 1.4662,
+   "pct_multi": 13.73
+  },
+  {
+   "window_ms": 1000,
+   "bursts": 29852,
+   "E_X": 1.2901,
+   "E_X2": 2.4472,
+   "kappa_E_X2_over_E_X2": 1.4703,
+   "pct_multi": 14.4
+  },
+  {
+   "window_ms": 2000,
+   "bursts": 29553,
+   "E_X": 1.3032,
+   "E_X2": 2.5222,
+   "kappa_E_X2_over_E_X2": 1.4852,
+   "pct_multi": 14.96
+  }
+ ],
+ "concurrency_demand": {
+  "peak_in_flight": 25,
+  "mean_in_flight_time_weighted": 0.1927,
+  "histogram": {
+   "0": 15003,
+   "1": 21409,
+   "2": 10961,
+   "3": 8752,
+   "4": 7485,
+   "5": 5398,
+   "6": 3249,
+   "7": 1879,
+   "8": 1117,
+   "9": 624,
+   "10": 394,
+   "11": 221,
+   "12": 130,
+   "13": 94,
+   "14": 72,
+   "15": 55,
+   "16": 46,
+   "17": 41,
+   "18": 35,
+   "19": 24,
+   "20": 13,
+   "21": 7,
+   "22": 5,
+   "23": 4,
+   "24": 3,
+   "25": 1,
+   "-1": 4
+  }
+ }
+}

@@ -579,6 +579,18 @@ console.log(
 	const reqRate = (totalTok / (targetLagMin * 60000)) * 1000;
 	console.log('\n--- capacity proof (measurement product, demonstrated) ---');
 	console.log(
+		`  NOTE: this is the RATE-ONLY estimate (tokens / time). It prices token quota,`,
+	);
+	console.log(
+		`  not slots. The capacity question that needs slots is answered by M-13`,
+	);
+	console.log(
+		`  (Erlang capacity planning) — and on measured agent traffic the closed form`,
+	);
+	console.log(
+		`  understates the circuits needed by up to 2.`,
+	);
+	console.log(
 		`  workload: ${Math.round(totalTok).toLocaleString('en-US')} tokens across ${N_TASKS} tasks; target: all done in <=${targetLagMin} min of provider time`,
 	);
 	console.log(

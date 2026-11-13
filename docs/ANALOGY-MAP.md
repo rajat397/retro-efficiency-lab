@@ -28,7 +28,7 @@ banned from pitches.
 | 3 | TCP congestion control (Jacobson 1988) | AIMD: additive increase on success, multiplicative decrease on loss; no global knowledge needed | adaptive per-provider concurrency: track own in-flight limit, shrink on 429s | 429 signals are late/noisy vs TCP loss; LLM durations ≫ packet RTT variance | **implemented as the `aimd` runtime in the M-12 bench (see §Results)** | v1 mechanism, measured |
 | 4 | Lotus 1-2-3 (1983) | dependency-tracked incremental recomputation | re-run only reasoning steps downstream of a changed tool result; whole-conversation replay is why cost grows ~quadratically | LLM steps aren't pure functions (batch nondeterminism) — only pays if cached outputs are reusable | adjacent to M-4/M-9 determinism; depends on cacheability | research direction |
 | 5 | Netcode rollback/lockstep (GGPO) | speculate forward; roll back + replay on real input | speculative tool-call execution, discard/replay on divergence | rollback needs deterministic recompute — model calls aren't, unless batching is controlled; would have to replay recorded outputs | connects to the determinism track (M-4/M-9; scoped to engine-controlled systems) | research direction |
-| 6 | Erlang queueing (1909→) | closed-form capacity: circuits needed for target blocking probability at given load | the capacity-proof product: workers needed for a target wait at provider limits — the buyer's procurement question, answered as a number | Erlang assumes Poisson arrivals + independent calls; agent traffic is bursty/correlated fan-out → heavy-tailed models are a real research gap | M-12 capacity-proof output (linear estimate today; Erlang-gap measured below) | v1 product, math upgrade pending |
+| 6 | Erlang queueing (1909→) | closed-form capacity: circuits needed for target blocking probability at given load | the capacity-proof product: workers needed for a target wait at provider limits — the buyer's procurement question, answered as a number | Erlang assumes Poisson arrivals + independent calls; agent traffic is bursty/correlated fan-out → heavy-tailed models are a real research gap | M-12 capacity-proof output (linear estimate) → **M-13** Erlang capacity planning (the math upgrade, measured) | v1 product, math upgrade **done** |
 | 7 | Smalltalk/PARC image persistence | full-state snapshot, resume rather than restart | resume-from-checkpoint for agent runs (Anthropic built one; Temporal does event-history) | snapshots are large; agent state includes the whole context window — checkpoint size is itself a cost | orthogonal to the lab's current SKU | research direction |
 | 8 | Mainframe JCL / batch scheduling | job budgets + chargeback: declared budget, spend attributed to owner | per-agent/per-team spend attribution with hard limits (the $47K incidents were unattributed) | buyer is finance/platform, not engineering — the interface is chargeback, not code | complements M-12's $ ledger | v1 feature candidate |
 
@@ -99,3 +99,36 @@ concurrency, not spend — the two disciplines are not substitutes.
 jitter, naive retries **synchronize** — 192 retries in a single virtual
 instant, versus 1–2 for the disciplined runtimes. That is the thundering herd,
 counted rather than asserted.
+
+## Results: Erlang-style capacity planning (measured, M-13)
+
+The other strong candidate (analogy #6). The break point was stated up
+front — *Erlang assumes Poisson arrivals and independent calls; agent traffic
+is bursty and correlated, because one user action can spawn a fan-out* — so
+the first job was to measure the premise rather than argue it.
+
+**The premise, measured (T9).** Real agent traffic on this machine: 38,513
+tool calls, 29,852 bursts, **E[X] = 1.2901, E[X²] = 2.4472, κ = E[X²]/E[X]² =
+1.4703** — **47 % more count-variance than Poisson**, stable across a 40×
+range of burst-grouping windows (E[X] 1.235→1.303, κ 1.397→1.485).
+
+**The cost of the assumption, measured (M-13).** Erlang's closed form agrees
+with a simulation for M/M/c (max |rel.err| **5.1 %** mean wait, **3.7 %**
+P(wait), material cells). Switched to the measured fan-out shape at the same
+offered load and circuits:
+
+| A | circuits | Erlang C | fan-out (simulated) | closed form understates |
+|---|---|---|---|---|
+| 5 | 10 | 0.0289 | 0.1347 | +366 % |
+| 8 | 13 | 0.0608 | 0.1847 | +204 % |
+| 12 | 17 | 0.1013 | 0.2404 | +137 % |
+
+Mean **3.4× the Poisson answer**, and in capacity-plan terms the closed form
+buys **up to 2 circuits too few** — largest where the SLO is tightest (0.05–0.25 s),
+zero at loose SLOs (2 s), which is exactly how a single loose SLO hides the
+problem. The classical compound-Poisson batch correction does **not** transfer
+(it over-corrects ~6.8× — it is calibrated for single-server M^X/G/1), so the
+correction the product ships is the **measured** burst factor, not a formula.
+
+**The honest product shape:** the capacity answer is **two numbers** — circuits
+(slots) *and* token quota. M-12's linear estimate prices only the quota.
