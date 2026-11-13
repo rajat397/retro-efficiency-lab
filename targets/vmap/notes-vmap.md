@@ -84,8 +84,12 @@ each block — no per-block registry of hooks exists anywhere in the binary.
 ```
 
 `0x31` = 49 decimal. `FUN_1000_08b5` (`0x108b5`) is a column-pad routine: it compares the output
-cursor `0x12(%bp)` against `AX + 0xda5` and emits spaces until the cursor reaches column 49.
-The header's last column starts there (see C6).
+cursor `0x12(%bp)` against `AX + 0xda5` and emits spaces until the cursor reaches buffer offset 49.
+The printed format begins with a space (C7), so the first vector's hex digits land at line offset
+**50** — exactly where the word `hooked` starts in the header line (C6; verified: the header line
+`addr PSP  blks   size  owner/parameters           hooked vectors` has `hooked` at index 50).
+The output cursor is reset to the buffer base `0x0da5` by `0x10848` after every line, so these
+offsets are line-relative.
 
 ## C6 — The column header (flat `0x10a48`, seg `0x0a48`, file `0x0948`)
 
@@ -123,8 +127,11 @@ The value printed is the vector number, computed as `0x100 - CX`:
 0x105a4: CALL 0x1000:0836      ; newline
 ```
 
-`0x10836` prints `"\r\n"` (string at seg `0x0adb`: bytes `0d 0a 00`, file offset `0x09db`).
-The per-block counter lives at `[BP + 0x32]` and is zeroed at `0x10572` at the start of every block.
+`0x10836` prints the line terminator and then flushes the line buffer: `0x10837: MOV SI, 0xadb`
+(segment offset `0x0adb` = the single byte `0x0a`, LF — the CR/LF pair `0d 0a` is at segment offset
+`0x0ada`), then `0x1083d: MOV SI, 0xda5` prints the accumulated row through `0x1080c`
+(`INT 21h AH=40h`), then `0x10848` resets the cursor to the buffer base. The per-block counter
+lives at `[BP + 0x32]` and is zeroed at `0x10572` at the start of every block.
 
 ## C9 — The hooked-vectors column is only printed for rows whose owner column did not claim the slot (flat `0x1029b`)
 
@@ -259,6 +266,36 @@ not as a claim.
 `0x105d1` classifies the block as DOS-owned when the byte at `+0` is `'D'` (0x44) or `'I'` (0x49)
 (`0x105d7: CMPB $0x44,(%di)` / `CMPB $0x49,(%di)`), and `0x10380` recognises the "owner lives in
 the 0xff00–0xffff upper area" case (the classic DOS high-memory resident convention).
+
+## Reproduction — the exact REA calls behind this file
+
+The artifact is not in the repo (path below is the analyst's machine); the SHA-256 above pins it.
+
+```
+export PATH="/home/rajat/.local/share/pi-node/node-v22.23.0-linux-x64:$PATH"
+export GHIDRA_INSTALL_DIR=/mnt/data/opt/ghidra_12.1.4_PUBLIC
+BIN=/mnt/data/rea/touhou/th04e-files/VMAP.COM
+
+rea analyze  $BIN --target-format dos-com --snapshot ./vmap.rea.json
+rea search   $BIN --kind strings    --pattern "." --mode regex --target-format dos-com --snapshot ./vmap.rea.json
+rea search   $BIN --kind procedures --pattern "." --mode regex --target-format dos-com --snapshot ./vmap.rea.json
+rea function $BIN --procedure 0x10100 --target-format dos-com --snapshot ./vmap.rea.json   # entry
+rea function $BIN --procedure 0x1017b --target-format dos-com --snapshot ./vmap.rea.json   # conventional map
+rea function $BIN --procedure 0x10247 --target-format dos-com --snapshot ./vmap.rea.json   # block walk
+rea function $BIN --procedure 0x10570 --target-format dos-com --snapshot ./vmap.rea.json   # hooked-vector scan
+rea read-bytes $BIN 0x10a48 --length 24 --target-format dos-com
+rea read-bytes $BIN 0x10b49 --length 24 --target-format dos-com
+rea read-bytes $BIN 0x10c4f --length 24 --target-format dos-com
+rea read-bytes $BIN 0x10c54 --length 24 --target-format dos-com
+rea read-bytes $BIN 0x10ad8 --length 12 --target-format dos-com
+rea address-to-file-offset $BIN 0x10570 --target-format dos-com
+rea address-to-file-offset $BIN 0x10c8a --target-format dos-com
+```
+
+Address-space note for the verifier: the Ghidra program holds the COM image in the flat `ram` space
+at `0x10100..0x10d65` (image base `0x0`, one segment), so `ram` address `0x10xxx` ↔ file offset
+`0x0xxx - 0x100`. The code's own operands are *segment-relative* (`MOV SI, 0xb49` = flat
+`0x10b49`). See deviation D2.
 
 ---
 

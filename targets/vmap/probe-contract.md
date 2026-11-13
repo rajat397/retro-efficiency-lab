@@ -166,3 +166,8 @@ The card (`catalog/mechanisms/M-14-range-intersection-attribution.md`) states th
 binary — the arena chain-integrity check that aborts with `"*** Memory Arena Trashed!"`
 (`0x10ade`) — is reported as a *supporting observation inside the same witness*, not as a second
 witness, so the card's status stays `single-witness`.
+
+*(Precision amendments made after the first commit, correcting my own notes rather than the
+contract's hypothesis: the line terminator at segment offset `0x0adb` is a bare LF (`0x0a`), with
+the CR/LF pair at `0x0ada`; and the column pad target is line-buffer offset 49 with the first
+vector's hex digits at offset 50 — the exact offset of `hooked` in the header line.)*

@@ -39,10 +39,12 @@ second witness.
   pointer, stdout, exit), `INT 67h` (EMS), and two `INT 2Fh` calls that are the XMS entry-point
   probe (`0x1070c`, `0x10715`) — nothing asks "which vectors does this program hook", because
   nothing can.
-* Output shape: pad to output column 49 (`0x105a7: MOV AX, 0x31`), then one `" %02x"` per hooked
-  vector (format string at flat `0x10b49`, bytes `20 25 30 32 78 00`), vector number computed as
-  `0x100 - CX` (`0x105ad`/`0x105b0`), ten per line then a newline (`0x1059c: CMP AL, 0xa`).
-  Column header at flat `0x10a48`: `"…owner/parameters           hooked vectors\r\n"`.
+* Output shape: pad to line-buffer offset 49 (`0x105a7: MOV AX, 0x31`), then one `" %02x"` per
+  hooked vector (format string at flat `0x10b49`, bytes `20 25 30 32 78 00`), vector number
+  computed as `0x100 - CX` (`0x105ad`/`0x105b0`), ten per line then a newline (`0x1059c: CMP AL, 0xa`).
+  The leading space in the format puts the first vector's hex digits at line offset 50 — the exact
+  offset at which `hooked` starts in the header line (flat `0x10a48`:
+  `"…owner/parameters           hooked vectors\r\n"`).
 * The column is emitted only for rows whose owner column did not already claim the slot
   (`0x1029b: CMP byte ptr [BP + 0x36], 0x0`): free/DOS-owned blocks show no vectors, program-owned
   blocks do — a deliberate column budget, not an accident.
