@@ -5,7 +5,7 @@ Evidence cards per `docs/methodology.md`. Status ladder: `single-witness` →
 
 Families: `determinism` · `zero-alloc` · `data-as-program` · `procedural` ·
 `streaming` · `format` · `lut` · `adaptive` · `spatial` · `sched` ·
-`budget-portability` · `erlang-capacity`
+`budget-portability` · `erlang-capacity` · `attribution`
 
 Cataloged: **M-1, M-3, M-4, M-6, M-7, M-8, M-9, M-10** — M-4 and M-7 gained their second witnesses from
 Target 2 (Doom, official id source release), making the first cross-engine-family
@@ -27,6 +27,7 @@ proofs.
 | [M-11](M-11-work-budgets.md) | Hard per-operation work budgets | sched | **proven** | TH04 + transfer test |
 | [M-12](M-12-budget-portability.md) | Budget disciplines are resource-agnostic (port to token/rate-limit resources) | budget-portability | **proven** | TH04 + transfer test |
 | [M-13](M-13-erlang-capacity.md) | Queueing math gives a closed-form capacity answer — but only for Poisson arrivals | erlang-capacity | **proven** | Erlang (1909/1929) + transfer test + measured traffic |
+| [M-14](M-14-range-intersection-attribution.md) | Range-intersection attribution: derive ownership by intersecting a global handler table with the ranges you already enumerated (no registry) | attribution | single-witness | VMAP.COM (1991 DOS utility, original binary) |
 
 Working set anchor (TH04 `MAIN.EXE`): ≈ **190 KB** total (154 KB image + 34.6 KB BSS)
 for the full gameplay engine; bullet pool = 440 × 26 B = 11.4 KB of that.

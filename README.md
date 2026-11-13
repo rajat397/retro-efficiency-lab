@@ -33,10 +33,10 @@ merge → commits → PR-ready branches, worktree cleanup, replayable log).
 
 ## Status
 
-- **4 mechanisms proven** on modern stacks with runnable reproductions
-  (memory · scheduling · determinism · dispatch) — see **[SYNTHESIS.md](SYNTHESIS.md)**.
-- **9 mechanisms extracted** across 4 engine families (id Tech 1, Build,
-  Another World VM, Borland/Clickteam PC-98 era) — see `catalog/` and
+- **9 mechanisms proven** on modern stacks with runnable reproductions
+  (memory · scheduling · determinism · dispatch · budget) — see **[SYNTHESIS.md](SYNTHESIS.md)**.
+- **14 mechanisms extracted** across 5 engine families (id Tech 1, Build,
+  Another World VM, Borland/Clickteam PC-98 era, DOS utilities) — see `catalog/` and
   `targets/README.md`.
 
 ## Rules

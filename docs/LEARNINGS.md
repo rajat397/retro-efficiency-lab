@@ -5,7 +5,8 @@ findings, technical findings, and an honest usefulness audit. Per-target evidenc
 lives in `targets/*/findings*.md` and `catalog/mechanisms/*.md`; this file does not
 duplicate it, it distills it and links.
 
-Maintained additively at target closeout. Last updated: 2026-11-13 (after QVM phase 4).
+Maintained additively at target closeout. Last updated: 2026-11-13 (after the M-14 VMAP cold run;
+the previous note — "after QVM phase 4" — was stale, M-12/M-13 had already landed).
 
 ---
 
@@ -20,6 +21,7 @@ Maintained additively at target closeout. Last updated: 2026-11-13 (after QVM ph
 | **Controlled A/B requires identical syscall counts** | engine-mode comparisons are only valid if the workload is deterministic across modes; assert the count equality, and when it drifts, that drift is itself a finding (FP divergence). | QVM phases 3–4 |
 | **Run-only-what-you-need scripts** | harnesses print aggregates, never raw dumps; large artifacts are streamed/grepped, never fully loaded. (Also the session-level lesson: repeated full-state re-verification burned context without producing files — "verify" phases were banned in favor of write/run/record.) | session protocol |
 | **Probe contracts before dispatch** | 3–5 questions written before touching a target; classes assigned before evidence is collected. | `docs/templates/probe-contract.md` |
+| **Bulk-locate, then spend the read budget on the contract's 3–5 functions** | when each deep-analysis call re-imports the artifact (~25 s) and the harness kills background jobs, a bulk disassembly finds the candidate procedures for free and only the contract's anchor procedures get the expensive decompile; write each extracted constant to disk as it is found, so an interrupted run costs minutes instead of the session. Also: `rea xrefs` on a flat address can be empty while the reference exists in the segment-relative space — read the assembly, do not conclude "no reference". | VMAP.COM cold run (M-14) |
 
 ## 2. Architectural findings (cross-target, the ones that generalize)
 
