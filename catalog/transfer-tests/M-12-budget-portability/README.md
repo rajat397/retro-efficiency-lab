@@ -76,13 +76,43 @@ Run: `node bench.mjs`
 
 ## Validating against a real (mock) provider
 
-`mock-provider.mjs` in this directory is an OpenAI-compatible mock that
-injects controlled pathology (latency jitter, 429s, 5xx, timeouts, a TPM
-ceiling, a concurrency ceiling) and logs what the harness actually sent. It
-exists so the bench's predicted 429 counts can be checked against a live
-client rather than against the simulator's own arithmetic.
+A simulation can be self-consistent and still wrong about the mechanism it
+claims to model. `mock-provider.mjs` is an OpenAI-compatible peer that injects
+controlled pathology (latency jitter, 429s, 5xx, timeouts, a TPM ceiling, a
+concurrency ceiling) and logs what the harness actually sent.
+`validate-mock.mjs` spawns its own peer and drives it with two clients:
 
 ```
-MOCK_PORT=4600 MOCK_JITTER_MS=50 MOCK_JITTER_SPREAD=100 MOCK_429_RATE=0.1 \
-MOCK_5XX_RATE=0.01 node mock-provider.mjs
+node validate-mock.mjs 8
 ```
+
+| metric | naive (blind) | leased (self-capped) |
+|---|---|---|
+| 429 rejections | 292 | **0** |
+| peak retries in flight at once | 8 | **0** |
+| peak retries dispatched in one millisecond | 7 | **0** |
+| elapsed | **51,342 ms** | **399 ms** |
+
+Both claims under test **confirmed** against a live peer: an un-jittered retry
+storm forms (8 retries in flight at once, 7 dispatched in the same
+millisecond) while a self-capped client is never rejected (0 vs 292) — and the
+storm cost **129× the wall-clock** (51.3 s vs 0.4 s).
+
+**Scope, honestly.** The live peer validates the *mechanism*, not the bench's
+absolute counts. The bench's "192 retries at one instant" is a *scheduling*
+herd (how many retries are launched into the queue together); the live figure
+is a *concurrency* herd, and the peer's own concurrency ceiling physically
+bounds it to 8. The absolute rejection counts (961,375) depend on the bench's
+quota model, not on the peer. Two implementation notes that cost a wrong
+first result, recorded because both would silently void the test:
+- the peer must count in-flight at **arrival**, before reading the body, or
+  overlapping requests are invisible;
+- the peer needs real latency, or requests complete faster than sockets are
+  accepted and no overlap occurs (measured: 0 ms jitter → the peer never saw
+  two requests in flight; 300 ms → it saw 9).
+- Node's global `fetch` pooled the calls into a serial chain; the validation
+  client uses raw `http` with an explicit socket pool.
+
+The mock provider also doubles as the instrument that diagnosed the
+session-crash of 2026-11-13: it logs the exact tool count and schema bytes the
+harness sends (236 tools / 816 KB / 281,131 input tokens before the fix).

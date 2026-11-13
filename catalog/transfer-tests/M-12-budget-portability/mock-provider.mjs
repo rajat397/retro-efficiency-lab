@@ -31,6 +31,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 createServer(async (req, res) => {
   if (req.method !== 'POST') { res.writeHead(404); return res.end('{}') }
+  // Count in-flight at ARRIVAL, before the body is consumed. Counting it after
+  // the body read made every request look serial: the counter only rose once
+  // a request's body had been fully read, so genuinely overlapping requests
+  // were never observed and the peer's concurrency ceiling never fired.
+  inflight++
+  const arrivalInflight = inflight
   let body = ''
   for await (const c of req) body += c
   let j = {}; try { j = JSON.parse(body) } catch {}
@@ -50,13 +56,12 @@ createServer(async (req, res) => {
     request_bytes: body.length,
     approx_prompt_tokens: approxTokens,
     message_count: (j.messages||[]).length,
-    inflight_at_arrival: inflight,
+    inflight_at_arrival: arrivalInflight,
     tpm_ceiling: cfg.tpm, tokens_used_this_minute: minuteTokens,
     pathology: cfg
   }
   appendFileSync(LOG, JSON.stringify(record)+'\n')
 
-  inflight++
   try {
     if (cfg.maxConc && inflight > cfg.maxConc) {
       res.writeHead(429, {'content-type':'application/json','retry-after':'1'})
