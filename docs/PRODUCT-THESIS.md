@@ -119,8 +119,8 @@ incumbents do not answer it.
 |---|---|---|
 | A governor beats naive on the same workload | naive beats it on any axis | **measured** (M-12, 3 seeds, trace-hash oracle) |
 | The closed form answers the capacity question | Erlang diverges >10% from a live client | **measured** (M-13: 5.1%; and it is *wrong* for real traffic by 3.6× — the correction is measured, not assumed) |
-| A per-task budget kills runaways without killing good work | the unit cannot distinguish runaway from hard-but-legitimate work | **OPEN — the deciding experiment** |
-| The degradation ladder's order is measurable | ordering cannot be established without a quality metric | **OPEN** |
+| A per-task budget kills runaways without killing good work | the unit cannot distinguish runaway from hard-but-legitimate work | **REFUTED (M-15, 2026-11-13).** Measured: at every cap, the observed false kills equal the number of productive tasks costing more than the cap — a consumption unit's false kills are *forced* by the cost distribution. The discriminating signal is **progress**, and the primitive is a *pair* (cheap ceiling + progress signal), not a unit. Open: whether real fleets exhibit the progress/stall distinction at all (the workload's progress model is assumed, not measured). |
+| The degradation ladder's order is measurable | ordering cannot be established without a quality metric | **OPEN** (E5, not run) — note M-15's consequence: the first rung may not be a *model* choice at all, since a progress signal must exist before any ladder rung can be evaluated |
 | The arrival shape generalizes | κ differs materially across fleets | **OPEN** (T9: one machine, one operator) |
 | A governor reduces real spend | production fleets show no reduction | untested — needs a live fleet |
 
@@ -144,8 +144,13 @@ legitimate work**. That is a transfer test in the lab's own format (deterministi
 counters, naive baseline documented as good-faith, trace-hash oracle) and it produces the
 L1 primitive.
 
-**This is the M-15 candidate**, and it is the correct next move because it is the one thing
-whose absence blocks three of the four product layers.
+**This was the M-15 candidate** — and it was run on 2026-11-13. **Result: the hypothesis as
+framed was refuted and the better answer found.** No consumption unit separates the two
+kinds; the discriminator is a *progress signal*; and the product's L1 primitive is a **pair**
+(consumption ceiling + progress signal), which turns the L1 requirement into an
+**observability** requirement ("is this task still advancing?") rather than a metering one.
+That is a harder thing to build, and it is now the sprint's next target rather than a
+footnote.
 
 ---
 
