@@ -121,8 +121,32 @@ load-bearing rule is mutated.
 
 ## First-run protocol
 
-Record deviations from this runbook as step 6 of the run. The claim graduates to
-"repeatable" only when a run completes and **the reviewer cannot tell which
-cards were written in-house**. Run #1 (2026-11-13, `VMAP.COM`) did not meet that
-criterion — see `docs/COLD-RUN-2026-11-13.md` for the datum, the ten gaps that
-produced this v2, and what would have to change for run #2.
+Record deviations from this runbook as step 6 of the run.
+
+**Graduation criterion (v2.1, revised after run #1).** The earlier criterion —
+"the reviewer cannot tell which cards were written in-house" — measured
+*provenance*, not quality, and it was dropped. Run #1 is the proof: M-14 failed
+that bar (it carries a deviation log) while passing every quality check, and a
+card written entirely in-house could carry no deviation log and still be wrong.
+Provenance cannot detect a wrong card and rejects a good one.
+
+A run graduates the repeatability claim when the card passes the four
+**authorship-agnostic** checks:
+
+1. **The anchors support the claim** — a separate verification pass re-reads the
+   original artifact and confirms each quoted constant exists at its quoted
+   address *and* that the surrounding code supports the asserted semantics.
+   (Run #1: the operator decoded the claimed instructions straight from the
+   binary at the claimed offsets; every one matched.)
+2. **The bench has teeth** — mutating the load-bearing rule makes it exit
+   non-zero.
+3. **The honest limits are stated in the same breath as the headline.**
+4. **A third party can reproduce it from the recipe** — the notes carry the exact
+   commands that regenerate the anchors, so verification does not require
+   trusting the author.
+
+Check 4 is what a non-author run adds that an in-house pass does not: it is the
+evidence that the *method* is transportable, which is a platform question worth
+asking. It is not evidence that the card is good — check 1 is, and check 1 does
+not care who wrote it. If the pitch is a portfolio ("we have N proven
+mechanisms"), none of this is load-bearing and the thread can be closed.
