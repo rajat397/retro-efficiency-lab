@@ -1,0 +1,318 @@
+{
+ "generated_at": "2026-11-13T19:04:12.131Z",
+ "platform": "linux x64",
+ "node": "v22.23.0",
+ "runs_each": 2,
+ "rows": [
+  {
+   "bench": "M-1-event-vm",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 4,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 5,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-10-index-linked-lists",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 6,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 5,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-11-work-budgets",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 15,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 12,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-12-budget-portability",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "locale",
+     "count": 3,
+     "why": "locale-dependent formatting — differs by machine locale"
+    },
+    {
+     "id": "float-format",
+     "count": 9,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-13-erlang-capacity",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "locale",
+     "count": 3,
+     "why": "locale-dependent formatting — differs by machine locale"
+    },
+    {
+     "id": "float-format",
+     "count": 34,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-14-range-intersection-attribution",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": true,
+   "verdict": "VERDICT: PASS vectors=256 blocks=8 hooked=87 rangeCorrect=83 rangeWrong=0 rangeUnattributed=4 rangeComparisons=2048 rangeWrites=0 rangeAllocations=0 registryCorrect=60 registryWrong=27 registryMissed=8 registryWrites=79 probeCorrect=83 boundaryCases=24 probeCalls=8 digest=1f95849c1e662b68bf7347eda0137d2adcbbb196cb961b4e8a1ea6c0041b7319",
+   "static_findings": []
+  },
+  {
+   "bench": "M-15-unit-of-work",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": true,
+   "verdict": "VERDICT:",
+   "static_findings": [
+    {
+     "id": "float-format",
+     "count": 11,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-15b-ledger",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": true,
+   "verdict": "VERDICT:",
+   "static_findings": [
+    {
+     "id": "float-format",
+     "count": 4,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-16-arrival-shape",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": true,
+   "verdict": "VERDICT:",
+   "static_findings": [
+    {
+     "id": "float-format",
+     "count": 19,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-2-slot-pool",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 4,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 10,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-3-self-mutating-dispatch",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": []
+  },
+  {
+   "bench": "M-4-replay-determinism",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": true,
+   "verdict": "VERDICT: replay determinism is architectural. Same recording, different machine load: fixed-tic replays byte-identically; the float/variable-dt sim never replays — machine timing leaked into game state because dt became part of the equations.",
+   "static_findings": [
+    {
+     "id": "float-format",
+     "count": 4,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-5-measured-slowdown",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "float-format",
+     "count": 9,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-6-procedural-state",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 6,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 7,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-7-fnptr-composition",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 8,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 5,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-8-zone-allocator",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 5,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 4,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  },
+  {
+   "bench": "M-9-lut-trig",
+   "exit": [
+    0,
+    0
+   ],
+   "identical_across_runs": false,
+   "verdict": null,
+   "static_findings": [
+    {
+     "id": "wall-clock",
+     "count": 6,
+     "why": "wall-clock read — the value differs on every machine and every run"
+    },
+    {
+     "id": "float-format",
+     "count": 9,
+     "why": "rounding — safe, but listed so the matrix is explicit about it"
+    }
+   ]
+  }
+ ]
+}

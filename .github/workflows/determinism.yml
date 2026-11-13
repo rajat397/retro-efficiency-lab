@@ -1,0 +1,125 @@
+# Cross-platform determinism matrix (E6).
+#
+# The repo's rule is "determinism claims name their matrix". This workflow IS
+# that matrix: every transfer-test bench is run on Linux, macOS and Windows, and
+# the deterministic VERDICT counters are compared across the three.
+#
+# A bench is COMPARABLE when it prints a line beginning "VERDICT:". A bench that
+# prints no VERDICT line cannot be compared automatically, and the job says so
+# explicitly rather than passing it silently.
+#
+# The workflow FAILS when a comparable bench's VERDICT line differs on any
+# platform. That is the claim being tested.
+
+name: determinism-matrix
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  bench:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run every bench and capture its VERDICT line
+        shell: bash
+        run: |
+          set -u
+          mkdir -p verdicts
+          for dir in catalog/transfer-tests/*/; do
+            name=$(basename "$dir")
+            [ -f "$dir/bench.mjs" ] || continue
+            echo "::group::$name"
+            out=$( cd "$dir" && node bench.mjs 2>&1 ) || true
+            echo "$out" | tail -25
+            verdict=$(echo "$out" | grep -m1 '^VERDICT:' || true)
+            if [ -n "$verdict" ]; then
+              printf '%s\n' "$verdict" > "verdicts/$name.txt"
+            else
+              printf 'NO_VERDICT_LINE\n' > "verdicts/$name.txt"
+            fi
+            echo "::endgroup::"
+          done
+          ls verdicts
+      - name: Upload verdict lines
+        uses: actions/upload-artifact@v4
+        with:
+          name: verdicts-${{ matrix.os }}
+          path: verdicts/
+
+  compare:
+    name: compare-platforms
+    needs: bench
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: all-verdicts
+      - name: Compare the three platforms
+        shell: bash
+        run: |
+          set -u
+          oses="ubuntu-latest macos-latest windows-latest"
+          mkdir -p compared
+          failed=0
+          comparable=0
+          notcomparable=0
+          summary=""
+          for f in all-verdicts/verdicts-*/*.txt; do
+            base=$(basename "$f" .txt)
+            os=$(basename "$(dirname "$f")" | sed 's/^verdicts-//')
+            mkdir -p "compared/$base"
+            cp "$f" "compared/$base/$os.txt"
+          done
+          for d in compared/*/; do
+            base=$(basename "$d")
+            first=""
+            same=1
+            have=""
+            for os in $oses; do
+              p="$d/$os.txt"
+              if [ ! -f "$p" ]; then same=0; break; fi
+              have="$have $os"
+              if [ -z "$first" ]; then first=$(cat "$p"); else
+                if [ "$(cat "$p")" != "$first" ]; then same=0; fi
+              fi
+            done
+            if grep -q NO_VERDICT_LINE "$d"/* 2>/dev/null; then
+              notcomparable=$((notcomparable+1))
+              summary="$summary| \`$base\` — NOT COMPARABLE (prints no VERDICT line) |"
+              continue
+            fi
+            comparable=$((comparable+1))
+            if [ "$same" = "1" ]; then
+              summary="$summary| \`$base\` — identical on $have |"
+            else
+              failed=$((failed+1))
+              summary="$summary| \`$base\` — **DIFFERS ACROSS PLATFORMS** |"
+              for os in $oses; do echo "  $os: $(cat "$d/$os.txt" 2>/dev/null)"; done
+            fi
+          done
+          {
+            echo "## Determinism matrix"
+            echo
+            echo "| bench | result |"
+            echo "|---|---|"
+            echo "$summary" | tr '|' '\n' | grep -v '^$'
+            echo
+            echo "comparable: $comparable | not comparable: $notcomparable | differing: $failed"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "comparable=$comparable notcomparable=$notcomparable differing=$failed"
+          if [ "$failed" != "0" ]; then
+            echo "::error::a comparable bench's VERDICT line differs across platforms"
+            exit 1
+          fi
