@@ -271,6 +271,10 @@ with the lab's own falsification discipline.
 
 ### The validation to run first
 
+> Full execution flow: `docs/PLAN-AGENT-FIRST.md` — eight gated steps (S0 measure → S1 re-rank
+> → S2 falsify → S3 buyer → S4 artifact → S5 adversarial → S6 harvest → S7 decide), each with a
+> self-contained agent brief.
+
 Not a build — a **measurement**, and it uses machinery the lab already has:
 
 > *Instrument a real Claude Code / OpenCode fleet and measure the context tax, the round-trip
