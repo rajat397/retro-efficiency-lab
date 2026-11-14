@@ -99,6 +99,11 @@ All five mechanisms survived two filters: (1) falsification through the retro-ef
 
 The thesis does not claim these are the *only* efficient mechanisms — they are the *falsified-and-survived* ones, the ones whose opposites have been measured and rejected. The retro laboratory provides the empirical engine: every mechanism began as a claim, was tested against real data, and the survivors are now positioned for forward transfer.
 
+**Forward transfer (2026-11-14).** The mechanism catalogue has been applied to the agent-tool
+interface, producing six candidate products with demand evidence and competitive checks:
+`docs/AGENT-FIRST-TOOLS.md`. Sequencing is kernel → ledger → replay, with the evidence browser
+as the standalone wedge and the skill foundry + shaped fleet as the moat.
+
 **Next steps.** (a) Prototype each mechanism in a modern application context (Electron app, SaaS billing system, CI pipeline, agent runner, real-time traffic system) and measure the before/after delta on the targeted bloat metric. (b) Where prototyping confirms benefit, package the mechanism as a reusable skill/module for the retro-efficiency-lab. (c) Expand the mechanism catalogue with new mechanisms from other domains (biomimicry, epidemiology, logistics) using the same two-filter method.
 
 ---
